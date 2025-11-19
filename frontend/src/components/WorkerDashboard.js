@@ -1,25 +1,6 @@
 import React from 'react';
 import styles from '../styles/workerdashboard.module.css';
 
-// Mock data for Worker
-const WORKER_PROFILE = {
-  name: "Jane Doe",
-  role: "Master Technician - Plumbing & Tiling",
-  location: "Metro Area, CA",
-  status: "Available",
-  skills: ["Emergency Plumbing", "Pipe Fitting", "Tile Installation", "Water Heater Repair", "Drainage Systems"],
-  stats: [
-    { label: "Jobs Completed", value: 312, color: styles.statBlue },
-    { label: "5-Star Rating", value: 4.9, color: styles.statYellow },
-    { label: "Active Requests", value: 3, color: styles.statGreen },
-  ],
-  jobs: [
-    { id: 1, title: "Install New Shower Unit", client: "R. Evans", due: "Fri, Sep 20th", status: "Pending", color: styles.yellowBorder },
-    { id: 2, title: "Fix Burst Pipe Emergency", client: "L. Smith", due: "Today, 3:00 PM", status: "Confirmed", color: styles.tealBorder },
-    { id: 3, title: "Tiling Quote for Kitchen", client: "A. Chen", due: "Next Week", status: "Draft", color: styles.grayBorder },
-  ]
-};
-
 // Dashboard Card Component
 const DashboardCard = ({ title, children }) => (
   <div className={styles.card}>
@@ -47,10 +28,29 @@ const JobItem = ({ title, client, due, status, color }) => (
   </div>
 );
 
-const WorkerDashboard = ({ setView, setUser }) => { // Accept setView and setUser as props
+const WorkerDashboard = ({ setView, setUser, user }) => {
   const handleLogout = () => {
-    setView('LOGIN'); // Redirect to login
-    setUser(null); // Clear user data
+    setView('LOGIN');
+    setUser(null);
+  };
+
+  // Use actual user data or provide defaults
+  const workerProfile = {
+    name: user?.name || "Worker Name",
+    role: user?.skill || "Skilled Worker",
+    location: user?.location || "Location Not Set",
+    status: "Available",
+    rating: user?.rating || 0,
+    // Mock data for stats - you can extend backend to provide these
+    stats: [
+      { label: "Jobs Completed", value: 0, color: styles.statBlue },
+      { label: "5-Star Rating", value: user?.rating || 0, color: styles.statYellow },
+      { label: "Active Requests", value: 0, color: styles.statGreen },
+    ],
+    // Skills based on profession
+    skills: user?.skill ? [user.skill] : [],
+    // Mock jobs - replace with actual job requests from backend later
+    jobs: []
   };
 
   return (
@@ -70,15 +70,15 @@ const WorkerDashboard = ({ setView, setUser }) => { // Accept setView and setUse
         <div className={styles.leftColumn}>
           <DashboardCard title="My Profile">
             <div className={styles.profileHeader}>
-              <div className={styles.avatar}>{WORKER_PROFILE.name.charAt(0)}</div>
+              <div className={styles.avatar}>{workerProfile.name.charAt(0).toUpperCase()}</div>
               <div className={styles.profileInfo}>
-                <h3 className={styles.name}>{WORKER_PROFILE.name}</h3>
-                <p className={styles.role}>{WORKER_PROFILE.role}</p>
-                <p className={styles.location}>{WORKER_PROFILE.location}</p>
+                <h3 className={styles.name}>{workerProfile.name}</h3>
+                <p className={styles.role}>{workerProfile.role}</p>
+                <p className={styles.location}>{workerProfile.location}</p>
               </div>
               <div className={styles.statusWrapper}>
-                <span className={`${styles.status} ${WORKER_PROFILE.status === 'Available' ? styles.statusGreen : styles.statusRed}`}>
-                  {WORKER_PROFILE.status}
+                <span className={`${styles.status} ${workerProfile.status === 'Available' ? styles.statusGreen : styles.statusRed}`}>
+                  {workerProfile.status}
                 </span>
               </div>
             </div>
@@ -86,7 +86,7 @@ const WorkerDashboard = ({ setView, setUser }) => { // Accept setView and setUse
           </DashboardCard>
 
           <div className={styles.statsGrid}>
-            {WORKER_PROFILE.stats.map((stat, idx) => <StatPill key={idx} {...stat} />)}
+            {workerProfile.stats.map((stat, idx) => <StatPill key={idx} {...stat} />)}
           </div>
         </div>
 
@@ -95,18 +95,28 @@ const WorkerDashboard = ({ setView, setUser }) => { // Accept setView and setUse
           <DashboardCard title="My Service Tags">
             <p className={styles.cardSubtitle}>Use these tags to match with clients:</p>
             <div className={styles.skillGrid}>
-              {WORKER_PROFILE.skills.map((skill, idx) => (
-                <span key={idx} className={styles.skillTag}>{skill}</span>
-              ))}
+              {workerProfile.skills.length > 0 ? (
+                workerProfile.skills.map((skill, idx) => (
+                  <span key={idx} className={styles.skillTag}>{skill}</span>
+                ))
+              ) : (
+                <p style={{ color: '#666', fontSize: '14px' }}>No skills added yet</p>
+              )}
             </div>
             <button className={styles.updateButton}>Update Tags</button>
           </DashboardCard>
 
           <DashboardCard title="Upcoming Job Pipeline">
             <div className={styles.jobsList}>
-              {WORKER_PROFILE.jobs.map(job => <JobItem key={job.id} {...job} />)}
+              {workerProfile.jobs.length > 0 ? (
+                workerProfile.jobs.map(job => <JobItem key={job.id} {...job} />)
+              ) : (
+                <p style={{ color: '#666', fontSize: '14px', padding: '20px', textAlign: 'center' }}>
+                  No job requests yet. Your requests will appear here.
+                </p>
+              )}
             </div>
-            <button className={styles.viewAllButton}>View All Job Requests (3 New)</button>
+            <button className={styles.viewAllButton}>View All Job Requests</button>
           </DashboardCard>
         </div>
       </div>

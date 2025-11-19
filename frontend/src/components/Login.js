@@ -49,7 +49,6 @@ export default function Login({ onRegisterClick, setView, setUser }) {
       <div className={styles.inputGroup}>
         <div style={{ display: 'flex', justifyContent: 'space-between' }}>
           <label className={styles.label}>Password</label>
-          <a href="#" className={styles.forgotPassword}>Forgot password?</a>
         </div>
         <div className={styles.inputWrapper}>
           <input 
