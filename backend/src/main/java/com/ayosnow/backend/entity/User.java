@@ -1,65 +1,82 @@
 package com.ayosnow.backend.entity;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
 
-import jakarta.persistence.*;
-
+// Assuming this is your JPA Entity class
 @Entity
-@Table(name = "users")
 public class User {
+
+    // Define the Enum Role inside the User class (as implied by the errors)
+    public enum Role {
+        CUSTOMER,
+        WORKER
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     private String name;
-
-    @Column(unique = true)
     private String email;
+    private String password; // Should be hashed in a real app!
 
-    private String password;
-
-    @Enumerated(EnumType.STRING)
+    @Enumerated(EnumType.STRING) // IMPORTANT: Stores the Enum name as a String in the database
     private Role role;
 
-    // Only for workers
-    private String skill;
-    private String location;
-    private Double rating;
+    private String skill; // For WORKERs
 
-    public enum Role { CUSTOMER, WORKER, ADMIN }
+    // Getters and Setters
+    public Long getId() {
+        return id;
+    }
 
-    // Constructors
-    public User() {}
+    public void setId(Long id) {
+        this.id = id;
+    }
 
-    public User(String name, String email, String password, Role role) {
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
         this.name = name;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
         this.email = email;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    // Setter now takes the Role Enum
+    public void setRole(Role role) {
         this.role = role;
     }
 
-    // Getters and setters
-    public Long getId() { return id; }
-    public void setId(Long id) { this.id = id; }
+    public String getSkill() {
+        return skill;
+    }
 
-    public String getName() { return name; }
-    public void setName(String name) { this.name = name; }
-
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
-
-    public String getPassword() { return password; }
-    public void setPassword(String password) { this.password = password; }
-
-    public Role getRole() { return role; }
-    public void setRole(Role role) { this.role = role; }
-
-    public String getSkill() { return skill; }
-    public void setSkill(String skill) { this.skill = skill; }
-
-    public String getLocation() { return location; }
-    public void setLocation(String location) { this.location = location; }
-
-    public Double getRating() { return rating; }
-    public void setRating(Double rating) { this.rating = rating; }
+    public void setSkill(String skill) {
+        this.skill = skill;
+    }
 }

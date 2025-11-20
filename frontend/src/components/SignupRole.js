@@ -26,9 +26,11 @@ export default function SignupRole({ onLoginClick, setView, setUser }) {
         alert('User registered successfully!');
         setUser(user);
 
-        // Redirect
-        if (user.role === 'WORKER') setView('WORKER_DASHBOARD');
-        else alert('Customer dashboard not implemented.');
+      if (user.role === 'WORKER') {
+          setView('WORKER_DASHBOARD');
+        } else if (user.role === 'CUSTOMER') {
+          setView('USER_DASHBOARD'); // Changed from alert to actual redirect
+        }
 
       } else {
         const error = await res.text();
