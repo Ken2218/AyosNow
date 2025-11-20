@@ -3,7 +3,8 @@ import { Eye, EyeOff, ArrowRight } from 'lucide-react';
 import styles from '../styles/Login.module.css';
 import axios from 'axios';
 
-export default function Login({ onRegisterClick, setView, setUser }) {
+// Added showMessage prop
+export default function Login({ onRegisterClick, setView, setUser, showMessage }) {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
@@ -12,22 +13,26 @@ export default function Login({ onRegisterClick, setView, setUser }) {
     e.preventDefault();
     try {
       const payload = { email, password };
+      // Note: In a real app, you should securely store the token/session ID here.
       const response = await axios.post('http://localhost:8080/api/auth/login', payload);
       const user = response.data;
 
-      alert(`Welcome, ${user.name}!`);
+      // Replaced alert() with custom message box
+      showMessage(`Welcome, ${user.name}!`, 'success'); 
+      
       setUser(user);
 
-      // Redirect based on role
+      // Role-Based Access Control (RBAC) logic already implemented here:
       if (user.role === 'WORKER') {
         setView('WORKER_DASHBOARD');
       } else {
-        alert('Customer dashboard not implemented yet.');
+        setView('USER_DASHBOARD');
       }
 
     } catch (err) {
       console.error(err);
-      alert(err.response?.data || 'Login failed');
+      // Replaced alert() with custom message box
+      showMessage(err.response?.data || 'Login failed. Please check your credentials.', 'error');
     }
   };
 
@@ -75,7 +80,7 @@ export default function Login({ onRegisterClick, setView, setUser }) {
 
       <p className={styles.footerText}>
         Don't have an account?{' '}
-        <button onClick={onRegisterClick} className={styles.link}>
+        <button type="button" onClick={onRegisterClick} className={styles.link}>
           Sign up for free
         </button>
       </p>
