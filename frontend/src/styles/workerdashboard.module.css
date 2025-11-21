@@ -477,17 +477,24 @@
 }
 
 .historyInfo {
-    flex-grow: 1;
+    flex: 1; /* Takes up all available width, pushing the button to the right */
+    display: flex;
+    flex-direction: column;
+    gap: 4px; /* Space between Title and Date */
+    min-width: 0; /* Prevents text from flowing off screen on small devices */
 }
 
 .historyTitle {
-    font-weight: 600;
-    font-size: 0.95rem;
+    font-weight: 700; /* Bold via CSS, not asterisks */
+    font-size: 1rem;
+    color: #111827;
+    margin: 0;
 }
 
 .historyDate {
-    font-size: 0.75rem;
-    color: #9ca3af;
+    font-size: 0.85rem;
+    color: #6b7280;
+    margin: 0;
 }
 
 .ratingWrapper {
@@ -632,18 +639,52 @@
 
 .fullHistoryItem {
     display: flex;
-    align-items: center;
+    align-items: center; /* Vertically centers everything */
+    justify-content: space-between;
     padding: 1rem;
     margin-bottom: 0.75rem;
-    background-color: #f9fafb;
-    border-radius: 0.5rem;
-    border-left: 4px solid #4f46e5;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    background-color: #ffffff; /* Clean white background */
+    border: 1px solid #e5e7eb;
+    border-radius: 0.75rem;
+    border-left: 5px solid #4f46e5; /* Accent border */
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    gap: 1rem; /* Adds consistent space between icon, text, and button */
 }
 
 .fullHistoryItem .historyInfo {
     margin-left: 0.75rem;
     flex-grow: 1;
+}
+.actionGroup {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-shrink: 0; /* Prevents this section from shrinking */
+}
+.statusBadge {
+    background-color: #eff6ff;
+    color: #2563eb;
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-weight: 600;
+    font-size: 0.9rem;
+    white-space: nowrap;
+}   
+.proceedButton {
+    background-color: #2563eb;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    white-space: nowrap; /* Keeps button text on one line */
+}
+
+.proceedButton:hover {
+    background-color: #1d4ed8;
 }
 
 /* Booking Flow */
@@ -652,6 +693,12 @@
     grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
     gap: 1rem;
     margin-top: 1rem;
+}
+.categorySpan {
+    font-weight: 400;
+    color: #6b7280;
+    font-size: 0.9rem;
+    margin-left: 5px;
 }
 
 .categoryItem {

@@ -42,8 +42,7 @@ const useFetchWorkerData = (initialWorkerName) => {
                     stats: [ // Dynamic Worker Stats
                         { label: "Active Jobs", value: 1, icon: <Activity size={16} /> }, 
                         { label: "Jobs Completed (30d)", value: 12, icon: <Briefcase size={16} /> },
-                        { label: "Avg. Rating", value: 4.9, icon: <Star size={16} fill="#fcd34d" color="#fcd34d" /> }, 
-                        { label: "Monthly Earnings", value: "₱15K", icon: <DollarSign size={16} /> }, 
+                        { label: "Avg. Rating", value: 4.9, icon: <Star size={16} fill="#fcd34d" color="#fcd34d" /> },  
                     ],
                     activeJobs: [ // Currently accepted jobs
                         { 
@@ -185,7 +184,6 @@ const WorkerHome = ({ data, handleSetTab, isLoading }) => (
                     <div className={styles.historyCard}>
                         <div className={styles.cardHeaderSimple}>
                             <h3>Performance Summary</h3>
-                            <button className={styles.link} onClick={() => handleSetTab('PERFORMANCE')}>View Full Report</button>
                         </div>
                         <ul className={styles.historyList}>
                             <li className={styles.historyItem}>
@@ -253,42 +251,54 @@ const JobRequests = ({ handleSetTab, workerData, updateActiveJobs }) => {
     };
 
     return (
-        <div className={styles.historyMainContainer}>
-            <h2 className={styles.profileHeader}>New Job Requests 🔔</h2>
-            
-            <div className={styles.jobsList}>
-                {newJobRequests.length > 0 ? (
-                    newJobRequests.map((job) => (
-                        <div key={job.id} className={styles.fullHistoryItem}>
-                            <div className={styles.historyIcon}><Briefcase size={20} /></div>
-                            <div className={styles.historyInfo}>
-                                <p className={styles.historyTitle}>**{job.title}** ({job.category})</p>
-                                <p className={styles.historyDate}>Client: {job.client} | Due: {job.date}</p>
-                            </div>
-                            <span className={styles.statusBadge} style={{ backgroundColor: '#2563eb', color: 'white' }}>
+    <div className={styles.historyMainContainer}>
+        <h2 className={styles.profileHeader}>New Job Requests 🔔</h2>
+
+        <div className={styles.jobsList}>
+            {newJobRequests.length > 0 ? (
+                newJobRequests.map((job) => (
+                    <div key={job.id} className={styles.fullHistoryItem}>
+                        
+                        {/* Icon */}
+                        <div className={styles.historyIcon}>
+                            <Briefcase size={20} />
+                        </div>
+
+                        {/* Text Info - Expanded with Flex: 1 in CSS */}
+                        <div className={styles.historyInfo}>
+                            <p className={styles.historyTitle}>
+                                {job.title}
+                                <span className={styles.categorySpan}> ({job.category})</span>
+                            </p>
+                            <p className={styles.historyDate}>
+                                Client: {job.client} • Due: {job.date}
+                            </p>
+                        </div>
+
+                        {/* Action Group - Keeps Price and Button together and right-aligned */}
+                        <div className={styles.actionGroup}>
+                            <span className={styles.statusBadge}>
                                 {job.price}
                             </span>
                             <button 
                                 className={styles.proceedButton} 
                                 onClick={() => handleAcceptJob(job)}
-                                style={{ padding: '8px 15px', fontSize: '14px', marginLeft: '10px' }}
                             >
                                 Accept Job
                             </button>
                         </div>
-                    ))
-                ) : (
-                    <div className={styles.emptyState}>
-                        <p>No new job requests at the moment.</p>
-                        <p className={styles.iconGray}>Check back later!</p>
+
                     </div>
-                )}
-            </div>
-            <p className={styles.iconGray} style={{ marginTop: '20px', textAlign: 'center' }}>
-                You also have {workerData.activeJobs.length} active job(s) in your pipeline.
-            </p>
+                ))
+            ) : (
+                <div className={styles.emptyState}>
+                    <p>No new job requests at the moment.</p>
+                    <p className={styles.iconGray}>Check back later!</p>
+                </div>
+            )}
         </div>
-    );
+    </div>
+);
 };
 
 // Reusing UserProfile styling for Worker Profile
@@ -318,37 +328,6 @@ const WorkerProfile = ({ data }) => (
             <h4>Performance Rating: **{data.rating}** Stars</h4>
             <p className={styles.statusDetail}>High rating ensures priority matching with premium clients.</p>
             <button className={styles.upgradeButton}>View Reviews</button>
-        </div>
-    </div>
-);
-
-// New component for Performance/Earnings, reusing existing styles
-const PerformanceAndEarnings = ({ data }) => (
-    <div className={styles.settingsContainer}>
-        <h2 className={styles.profileHeader}>Performance & Earnings 📈</h2>
-        <div className={styles.settingsGroup}>
-            <h4>Financial Summary (Last 30 Days)</h4>
-            <div className={styles.settingItem}>
-                <p>Total Revenue</p>
-                <p className={styles.statValue} style={{ color: styles.statusGreen }}>{data.stats.find(s => s.label === 'Monthly Earnings')?.value || 'N/A'}</p>
-            </div>
-            <div className={styles.settingItem}>
-                <p>Jobs Completed</p>
-                <p className={styles.statValue}>{data.stats.find(s => s.label === 'Jobs Completed (30d)')?.value || 'N/A'}</p>
-            </div>
-            <button className={styles.securityButton}>View Detailed Payouts</button>
-        </div>
-        <div className={styles.settingsGroup}>
-            <h4>Performance Metrics</h4>
-            <div className={styles.settingItem}>
-                <p>Cancellation Rate</p>
-                <p className={styles.statValue} style={{ color: '#ef4444' }}>1%</p>
-            </div>
-            <div className={styles.settingItem}>
-                <p>Job Acceptance Rate</p>
-                <p className={styles.statValue}>95%</p>
-            </div>
-            <button className={styles.securityButton}>View Client Feedback</button>
         </div>
     </div>
 );
@@ -417,8 +396,6 @@ const WorkerDashboard = ({ setView, userName, user, setUser }) => {
                 return <JobRequests handleSetTab={setActiveTab} workerData={workerData} updateActiveJobs={updateActiveJobs} />;
             case 'PROFILE':
                 return <WorkerProfile data={workerData} />;
-            case 'PERFORMANCE':
-                return <PerformanceAndEarnings data={workerData} />;
             case 'SETTINGS':
                 return <WorkerSettings />;
             default:
@@ -437,7 +414,6 @@ const WorkerDashboard = ({ setView, userName, user, setUser }) => {
                     <div className={styles.navLinks}>
                         <button className={activeTab === 'HOME' ? styles.navLinkActive : styles.navLink} onClick={() => setActiveTab('HOME')}><Home size={20} /> Home</button>
                         <button className={activeTab === 'JOBS' ? styles.navLinkActive : styles.navLink} onClick={() => setActiveTab('JOBS')}><FileText size={20} /> Job Requests</button>
-                        <button className={activeTab === 'PERFORMANCE' ? styles.navLinkActive : styles.navLink} onClick={() => setActiveTab('PERFORMANCE')}><Activity size={20} /> Performance</button>
                         <button className={activeTab === 'PROFILE' ? styles.navLinkActive : styles.navLink} onClick={() => setActiveTab('PROFILE')}><User size={20} /> Profile</button>
                         <button className={activeTab === 'SETTINGS' ? styles.navLinkActive : styles.navLink} onClick={() => setActiveTab('SETTINGS')}><Settings size={20} /> Settings</button>
                     </div>

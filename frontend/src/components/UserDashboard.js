@@ -12,7 +12,6 @@ const useFetchUserData = (initialUserName) => {
         stats: [], 
         activeBookings: [], 
         recentHistory: [],
-        memberStatus: 'Bronze',
         address: 'Loading Address...',
         email: 'Loading Email...'
     });
@@ -33,13 +32,12 @@ const useFetchUserData = (initialUserName) => {
                     email: initialUserName ? initialUserName.toLowerCase().replace(/\s/g, '.') + "@ayosnow.com" : "default@ayosnow.com",
                     phone: "(555) 555-0000",
                     address: "123 Main Street, City", 
-                    memberStatus: "Gold", 
                     
                     stats: [ // Dynamic Stats
                         { label: "Active", value: 0, icon: <Clock size={16} /> }, 
                         { label: "Total Jobs", value: 8, icon: <ListOrdered size={16} /> },
                         // Changed fill color to a proper hex for amber/gold consistent with the search button
-                        { label: "Rating Avg.", value: 4.7, icon: <Star size={16} fill="#fcd34d" color="#fcd34d" /> }, 
+                        
                     ],
                     activeBookings: [], // Start empty
                     recentHistory: [ 
@@ -152,7 +150,7 @@ const DashboardHome = ({ data, handleSetTab, isLoading }) => (
                         {/* Dynamic Avatar: First letter of the name */}
                         <div className={styles.avatarCircle}>{data.name.charAt(0)}</div> 
                         <p className={styles.profileName}>{data.name}</p>
-                        <p className={styles.memberStatus}>Status: **{data.memberStatus}**</p>
+
                         
                         <div className={styles.statsGrid}>
                             {data.stats.map((stat, idx) => (
@@ -318,32 +316,18 @@ const UserProfile = ({ data }) => (
             </div>
             <button className={styles.editButton}>Edit Profile</button>
         </div>
-        <div className={styles.membershipCard}>
-            <h4>Your **{data.memberStatus || 'Base'}** Status</h4>
-            <p className={styles.statusDetail}>Enjoy priority scheduling and discounted service fees.</p>
-            <button className={styles.upgradeButton}>Manage Membership</button>
-        </div>
+    
     </div>
 );
 
 const UserSettings = () => (
     <div className={styles.settingsContainer}>
         <h2 className={styles.profileHeader}>Account Settings ⚙️</h2>
-        <div className={styles.settingsGroup}>
-            <h4>Notification Preferences</h4>
-            <div className={styles.settingItem}>
-                <p>Email Notifications for Job Updates</p>
-                <input type="checkbox" defaultChecked />
-            </div>
-            <div className={styles.settingItem}>
-                <p>SMS Alerts for Worker Arrival</p>
-                <input type="checkbox" defaultChecked />
-            </div>
-        </div>
+        
         <div className={styles.settingsGroup}>
             <h4>Security & Access</h4>
             <button className={styles.securityButton}>Change Password</button>
-            <button className={styles.securityButton}>Manage Payment Methods</button>
+           
         </div>
     </div>
 );
