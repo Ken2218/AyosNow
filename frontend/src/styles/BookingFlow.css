@@ -1,0 +1,19 @@
+.container { padding: 20px; }
+
+.grid button {
+    padding: 10px;
+    margin: 5px;
+    border-radius: 6px;
+}
+
+.active {
+    background: #4f46e5;
+    color: white;
+}
+
+.submit {
+    margin-top: 15px;
+    padding: 12px;
+    background: #4f46e5;
+    color: white;
+}
