@@ -1,9 +1,7 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff, ArrowRight } from 'lucide-react';
 import styles from '../styles/Login.module.css';
-import axios from 'axios';
 
-// Added showMessage prop
 export default function Login({ onRegisterClick, setView, setUser, showMessage }) {
   const [showPassword, setShowPassword] = useState(false);
   const [email, setEmail] = useState('');
@@ -11,28 +9,24 @@ export default function Login({ onRegisterClick, setView, setUser, showMessage }
 
   const handleLogin = async (e) => {
     e.preventDefault();
-    try {
-      const payload = { email, password };
-      // Note: In a real app, you should securely store the token/session ID here.
-      const response = await axios.post('http://localhost:8080/api/auth/login', payload);
-      const user = response.data;
 
-      // Replaced alert() with custom message box
-      showMessage(`Welcome, ${user.name}!`, 'success'); 
-      
-      setUser(user);
+    // Simulating a successful login with a static user object
+    const user = {
+      name: 'John Doe',
+      email: email || 'johndoe@example.com',
+      role: 'USER',  // Simulate a user (you can change to 'WORKER' for testing worker role)
+    };
 
-      // Role-Based Access Control (RBAC) logic already implemented here:
-      if (user.role === 'WORKER') {
-        setView('WORKER_DASHBOARD');
-      } else {
-        setView('USER_DASHBOARD');
-      }
+    // Replaced the real API call with a simulated response
+    showMessage(`Welcome, ${user.name}!`, 'success'); 
+    
+    setUser(user);
 
-    } catch (err) {
-      console.error(err);
-      // Replaced alert() with custom message box
-      showMessage(err.response?.data || 'Login failed. Please check your credentials.', 'error');
+    // Simulate navigation based on user role
+    if (user.role === 'WORKER') {
+      setView('WORKER_DASHBOARD');
+    } else {
+      setView('USER_DASHBOARD');
     }
   };
 
@@ -85,6 +79,5 @@ export default function Login({ onRegisterClick, setView, setUser, showMessage }
         </button>
       </p>
     </form>
-    //hehe
   );
 }
