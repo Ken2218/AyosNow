@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { Wrench, Star, XCircle, CheckCircle } from 'lucide-react';
 import Login from './components/Login';
 import SignupRole from './components/SignupRole';
-import WorkerDashboard from './components/WorkerDashboard'; 
-import UserDashboard from './components/UserDashboard';
+import WorkerDashboard from './components/Worker/WorkerDashboard'; 
+import UserDashboard from './components/User/UserDashboard';
 import './index.css';
 
 // Custom Toast/Message Component
