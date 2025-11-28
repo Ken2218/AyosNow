@@ -1,0 +1,147 @@
+.historyMainContainer {
+    padding: 2rem;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.profileHeader {
+    font-size: 1.75rem;
+    font-weight: 700;
+    margin-bottom: 2rem;
+    color: #1f2937;
+}
+
+.bookingsList {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.bookingCard {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 1.5rem;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.cardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.serviceTitle {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 0.25rem;
+}
+
+.providerName {
+    font-size: 0.9rem;
+    color: #6b7280;
+}
+
+.statusBadge {
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.statusGreen {
+    background: #d1fae5;
+    color: #065f46;
+}
+
+.statusBlue {
+    background: #dbeafe;
+    color: #1e40af;
+}
+
+.statusIndigo {
+    background: #e0e7ff;
+    color: #4338ca;
+}
+
+.statusPurple {
+    background: #f3e8ff;
+    color: #7c3aed;
+}
+
+.statusYellow {
+    background: #fef3c7;
+    color: #92400e;
+}
+
+.statusRed {
+    background: #fee2e2;
+    color: #dc2626;
+}
+
+.statusGray {
+    background: #f3f4f6;
+    color: #6b7280;
+}
+
+.cardDetails {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.detailItem {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.9rem;
+    color: #6b7280;
+}
+
+.iconGray {
+    color: #9ca3af;
+}
+
+.iconYellow {
+    color: #fbbf24;
+    fill: #fbbf24;
+}
+
+.bookingDescription {
+    margin-top: 1rem;
+    padding: 0.75rem;
+    background: #f9fafb;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    color: #6b7280;
+    line-height: 1.5;
+}
+
+.emptyState {
+    text-align: center;
+    padding: 4rem 2rem;
+    background: #f9fafb;
+    border-radius: 12px;
+    margin-top: 2rem;
+}
+
+.emptyIcon {
+    color: #9ca3af;
+    margin-bottom: 1rem;
+}
+
+.emptyState p {
+    color: #6b7280;
+    font-size: 1rem;
+    margin-bottom: 0.5rem;
+}
+
+.emptyHint {
+    font-size: 0.9rem !important;
+    color: #9ca3af !important;
+}

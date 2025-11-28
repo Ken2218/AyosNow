@@ -1,12 +1,11 @@
-import React, { useState, useEffect } from 'react';
-import { Wrench, Star, XCircle, CheckCircle } from 'lucide-react';
+import React, { useState } from 'react';
+import { Wrench, XCircle, CheckCircle } from 'lucide-react';
 import Login from './components/Login';
 import SignupRole from './components/SignupRole';
 import WorkerDashboard from './components/Worker/WorkerDashboard'; 
 import UserDashboard from './components/User/UserDashboard';
 import './index.css';
 
-// Custom Toast/Message Component
 const Toast = ({ message, type, onClose }) => {
   const baseStyle = {
     position: 'fixed',
@@ -24,8 +23,8 @@ const Toast = ({ message, type, onClose }) => {
   };
 
   const typeStyles = {
-    success: { backgroundColor: '#10b981' }, // emerald-500
-    error: { backgroundColor: '#ef4444' }, // red-500
+    success: { backgroundColor: '#10b981' },
+    error: { backgroundColor: '#ef4444' },
   };
 
   const Icon = type === 'success' ? CheckCircle : XCircle;
@@ -34,7 +33,7 @@ const Toast = ({ message, type, onClose }) => {
     <div style={{...baseStyle, ...typeStyles[type]}}>
       <Icon size={20} style={{ marginRight: '10px' }} />
       <span>{message}</span>
-      <button onClick={onClose} style={{ marginLeft: '20px', background: 'none', border: 'none', color: 'white', cursor: 'pointer' }}>
+      <button onClick={onClose} style={{ marginLeft: '20px', background: 'none', border: 'none', color: 'white', cursor: 'pointer', fontSize: '20px' }}>
         &times;
       </button>
     </div>
@@ -42,26 +41,20 @@ const Toast = ({ message, type, onClose }) => {
 };
 
 export default function App() {
-  const [view, setView] = useState('LOGIN'); // LOGIN | REGISTER | WORKER_DASHBOARD | USER_DASHBOARD
+  const [view, setView] = useState('LOGIN');
   const [user, setUser] = useState(null); 
-  
-  // State for the custom message box (to replace alert())
   const [message, setMessage] = useState(null);
 
-  // Function to show a message
-  const showMessage = (text, type = 'info') => {
+  const showMessage = (text, type = 'success') => {
     setMessage({ text, type });
-    // Auto-hide after 4 seconds
     setTimeout(() => setMessage(null), 4000);
   };
 
-  // Helper to check if we are in a dashboard view
   const isDashboard = view === 'WORKER_DASHBOARD' || view === 'USER_DASHBOARD';
 
   return (
     <div style={{ display: 'flex', minHeight: '100vh', fontFamily: 'Inter, sans-serif' }}>
       
-      {/* Left Column - Hide if in ANY dashboard view */}
       {!isDashboard && (
         <div style={{ 
           width: '50%', 
@@ -83,26 +76,18 @@ export default function App() {
               Fix your problems, <br />
               <span style={{ color: '#bfdbfe' }}>one click away.</span>
             </h1>
-            <div style={{ background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)', padding: '1rem', borderRadius: '1rem', display: 'inline-flex', alignItems: 'center', gap: '1rem' }}>
-              <Star fill="currentColor" color="#1e1b4b" />
-              <div>
-                <div style={{ fontWeight: 'bold' }}>4.9/5 Rating</div>
-                <div style={{ fontSize: '0.8rem', opacity: 0.8 }}>Trusted by 10k+ users</div>
-              </div>
-            </div>
           </div>
-          <div style={{ zIndex: 10, opacity: 0.7 }}>&copy; 2024 AyosNow Inc.</div>
+          <div style={{ zIndex: 10, opacity: 0.7 }}>&copy; 2025 AyosNow Inc.</div>
         </div>
       )}
 
-      {/* Right Column - Full screen for dashboard */}
       <div style={{ 
         flex: 1, 
         display: 'flex', 
         alignItems: 'center', 
         justifyContent: 'center', 
         padding: isDashboard ? '0' : '2rem',
-        backgroundColor: isDashboard ? 'white' : '#f9fafb' // Light background for auth pages
+        backgroundColor: isDashboard ? 'white' : '#f9fafb'
       }}>
         <div style={{ width: '100%', maxWidth: isDashboard ? 'none' : '450px' }}>
           
@@ -111,7 +96,7 @@ export default function App() {
               onRegisterClick={() => setView('REGISTER')} 
               setView={setView} 
               setUser={setUser} 
-              showMessage={showMessage} // Pass the message handler
+              showMessage={showMessage}
             />
           )}
           
@@ -119,22 +104,30 @@ export default function App() {
             <SignupRole 
               onLoginClick={() => setView('LOGIN')} 
               setView={setView} 
-              setUser={setUser} 
+              setUser={setUser}
+              showMessage={showMessage}
             />
           )}
           
           {view === 'WORKER_DASHBOARD' && user && (
-            <WorkerDashboard user={user} setView={setView} setUser={setUser} />
+            <WorkerDashboard 
+              user={user} 
+              setView={setView} 
+              setUser={setUser}
+            />
           )}
 
           {view === 'USER_DASHBOARD' && user && (
-            <UserDashboard user={user} setView={setView} setUser={setUser} />
+            <UserDashboard 
+              user={user} 
+              setView={setView} 
+              setUser={setUser}
+            />
           )}
 
         </div>
       </div>
       
-      {/* Render the Toast Message */}
       {message && (
         <Toast 
           message={message.text} 

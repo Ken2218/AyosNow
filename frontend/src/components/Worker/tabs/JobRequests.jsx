@@ -1,81 +1,206 @@
-import React from 'react';
-import { Briefcase } from 'lucide-react';
+import React, { useState } from 'react';
+import { Clock, MapPin, CheckCircle, XCircle } from 'lucide-react';
 import styles from '../../../styles/workerdashboard.module.css';
 
-export const JobRequests = ({ handleSetTab, workerData, updateActiveJobs }) => {
-    // Simulated new job requests
-    const newJobRequests = [
-        { id: 401, title: 'Bathroom Sink Leak', category: 'Plumbing', client: 'Alice Johnson', date: '5:00 PM Today', location: '456 Oak Ave', price: '₱1,500' },
-        { id: 402, title: 'Install Ceiling Fan', category: 'Electrical', client: 'Bob Williams', date: 'Tomorrow Morning', location: '789 Pine Ln', price: '₱2,500' },
-        { id: 403, title: 'Clean A/C Unit', category: 'Cleaning/HVAC', client: 'Eve Davis', date: 'Mon, Dec 2', location: '101 Elm Blvd', price: '₱1,200' },
-    ];
+export const JobRequests = ({ handleSetTab, workerData }) => {
+    const [processingId, setProcessingId] = useState(null);
 
-    const handleAcceptJob = (job) => {
-        // --- API CALL TO ACCEPT JOB (WorkerJobController) ---
-        // ... simulate successful API call ...
+    const handleCompleteJob = async (job) => {
+        if (!window.confirm(`Mark job "${job.title}" as COMPLETED?`)) {
+            return;
+        }
 
-        const newActiveJob = {
-            id: job.id, 
-            title: job.title, 
-            client: job.client, 
-            time: job.date, 
-            status: "Accepted", 
-            color: styles.statusGreen,
-            address: job.location,
-        };
-        
-        updateActiveJobs(newActiveJob); 
-        alert(`Job ${job.title} accepted! It is now in your Active Jobs list.`);
-        handleSetTab('HOME'); 
+        setProcessingId(job.id);
+        try {
+            const response = await fetch(`http://localhost:8080/api/bookings/${job.id}/complete`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' }
+            });
+
+            if (response.ok) {
+                alert('✅ Job marked as completed!');
+                window.location.reload(); // Refresh to update the list
+            } else {
+                const error = await response.text();
+                alert('❌ Failed to complete job: ' + error);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('❌ Error: ' + error.message);
+        } finally {
+            setProcessingId(null);
+        }
+    };
+
+    const handleCancelJob = async (job) => {
+        if (!window.confirm(`Cancel job "${job.title}"? This action cannot be undone.`)) {
+            return;
+        }
+
+        setProcessingId(job.id);
+        try {
+            const response = await fetch(`http://localhost:8080/api/bookings/${job.id}/cancel`, {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' }
+            });
+
+            if (response.ok) {
+                alert('✅ Job cancelled!');
+                window.location.reload(); // Refresh to update the list
+            } else {
+                const error = await response.text();
+                alert('❌ Failed to cancel job: ' + error);
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            alert('❌ Error: ' + error.message);
+        } finally {
+            setProcessingId(null);
+        }
     };
 
     return (
-    <div className={styles.historyMainContainer}>
-        <h2 className={styles.profileHeader}>New Job Requests 🔔</h2>
+        <div className={styles.historyMainContainer}>
+            <h2 className={styles.profileHeader}>My Accepted Jobs 📋</h2>
 
-        <div className={styles.jobsList}>
-            {newJobRequests.length > 0 ? (
-                newJobRequests.map((job) => (
-                    <div key={job.id} className={styles.fullHistoryItem}>
-                        
-                        {/* Icon */}
-                        <div className={styles.historyIcon}>
-                            <Briefcase size={20} />
+            <div className={styles.bookingsList}>
+                {workerData.activeJobs.length > 0 ? (
+                    workerData.activeJobs.map((job) => (
+                        <div key={job.id} className={styles.bookingCard}>
+                            <div className={styles.cardTop}>
+                                <div>
+                                    <h4 className={styles.serviceTitle}>{job.title}</h4>
+                                    <p className={styles.providerName}>Client: <strong>{job.client}</strong></p>
+                                </div>
+                                <span className={`${styles.statusBadge} ${
+                                    job.status === 'COMPLETED' ? styles.statusGreen :
+                                    job.status === 'CANCELLED' ? styles.statusRed :
+                                    styles.statusYellow
+                                }`}>
+                                    {job.status}
+                                </span>
+                            </div>
+
+                            {job.description && (
+                                <p style={{ 
+                                    color: '#6b7280', 
+                                    fontSize: '0.875rem', 
+                                    marginTop: '0.5rem',
+                                    fontStyle: 'italic'
+                                }}>
+                                    "{job.description}"
+                                </p>
+                            )}
+
+                            <div className={styles.divider}></div>
+
+                            <div className={styles.cardBottom}>
+                                <div className={styles.infoItem}>
+                                    <Clock size={16} className={styles.iconGray} />
+                                    <span>{job.time}</span>
+                                </div>
+                                <div className={styles.infoItem}>
+                                    <MapPin size={16} className={styles.iconGray} />
+                                    <span>{job.address}</span>
+                                </div>
+                            </div>
+
+                            {/* Action Buttons - Only show if job is ACCEPTED */}
+                            {job.status === 'ACCEPTED' && (
+                                <div style={{ 
+                                    display: 'flex', 
+                                    gap: '0.5rem', 
+                                    marginTop: '1rem' 
+                                }}>
+                                    <button
+                                        className={styles.completeButton}
+                                        onClick={() => handleCompleteJob(job)}
+                                        disabled={processingId === job.id}
+                                        style={{
+                                            flex: 1,
+                                            padding: '0.75rem',
+                                            backgroundColor: '#10b981',
+                                            color: 'white',
+                                            border: 'none',
+                                            borderRadius: '8px',
+                                            fontWeight: '600',
+                                            cursor: processingId === job.id ? 'not-allowed' : 'pointer',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            gap: '0.5rem',
+                                            opacity: processingId === job.id ? 0.6 : 1
+                                        }}
+                                    >
+                                        <CheckCircle size={18} />
+                                        {processingId === job.id ? 'Processing...' : 'Mark Complete'}
+                                    </button>
+
+                                    <button
+                                        className={styles.cancelButton}
+                                        onClick={() => handleCancelJob(job)}
+                                        disabled={processingId === job.id}
+                                        style={{
+                                            flex: 1,
+                                            padding: '0.75rem',
+                                            backgroundColor: '#ef4444',
+                                            color: 'white',
+                                            border: 'none',
+                                            borderRadius: '8px',
+                                            fontWeight: '600',
+                                            cursor: processingId === job.id ? 'not-allowed' : 'pointer',
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            gap: '0.5rem',
+                                            opacity: processingId === job.id ? 0.6 : 1
+                                        }}
+                                    >
+                                        <XCircle size={18} />
+                                        {processingId === job.id ? 'Processing...' : 'Cancel Job'}
+                                    </button>
+                                </div>
+                            )}
+
+                            {/* Show completion message */}
+                            {job.status === 'COMPLETED' && (
+                                <div style={{
+                                    marginTop: '1rem',
+                                    padding: '0.75rem',
+                                    backgroundColor: '#d1fae5',
+                                    color: '#065f46',
+                                    borderRadius: '8px',
+                                    fontSize: '0.875rem',
+                                    fontWeight: '600',
+                                    textAlign: 'center'
+                                }}>
+                                    ✅ Job Completed Successfully
+                                </div>
+                            )}
+
+                            {job.status === 'CANCELLED' && (
+                                <div style={{
+                                    marginTop: '1rem',
+                                    padding: '0.75rem',
+                                    backgroundColor: '#fee2e2',
+                                    color: '#991b1b',
+                                    borderRadius: '8px',
+                                    fontSize: '0.875rem',
+                                    fontWeight: '600',
+                                    textAlign: 'center'
+                                }}>
+                                    ❌ Job Cancelled
+                                </div>
+                            )}
                         </div>
-
-                        {/* Text Info - Expanded with Flex: 1 in CSS */}
-                        <div className={styles.historyInfo}>
-                            <p className={styles.historyTitle}>
-                                {job.title}
-                                <span className={styles.categorySpan}> ({job.category})</span>
-                            </p>
-                            <p className={styles.historyDate}>
-                                Client: {job.client} • Due: {job.date}
-                            </p>
-                        </div>
-
-                        {/* Action Group - Keeps Price and Button together and right-aligned */}
-                        <div className={styles.actionGroup}>
-                            <span className={styles.statusBadge}>
-                                {job.price}
-                            </span>
-                            <button 
-                                className={styles.proceedButton} 
-                                onClick={() => handleAcceptJob(job)}
-                            >
-                                Accept Job
-                            </button>
-                        </div>
-
+                    ))
+                ) : (
+                    <div className={styles.emptyState}>
+                        <p>No accepted jobs yet.</p>
+                        <p className={styles.iconGray}>Accept jobs from the home page!</p>
                     </div>
-                ))
-            ) : (
-                <div className={styles.emptyState}>
-                    <p>No new job requests at the moment.</p>
-                    <p className={styles.iconGray}>Check back later!</p>
-                </div>
-            )}
+                )}
+            </div>
         </div>
-    </div>
-);
+    );
 };

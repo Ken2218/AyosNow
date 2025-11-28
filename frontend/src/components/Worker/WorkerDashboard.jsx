@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { LogOut, Settings, User, Wrench, Home, Bell, FileText, Activity } from 'lucide-react';
+import { LogOut, Settings, User, Wrench, Home, Bell, FileText } from 'lucide-react';
 import styles from '../../styles/workerdashboard.module.css';
 import { useFetchWorkerData } from './useFetchWorkerData';
 import { WorkerHome } from './tabs/WorkerHome';
@@ -7,26 +7,17 @@ import { JobRequests } from './tabs/JobRequests';
 import { WorkerProfile } from './tabs/WorkerProfile';
 import { WorkerSettings } from './tabs/WorkerSettings';
 
-const WorkerDashboard = ({ setView, userName, user, setUser }) => {
+const WorkerDashboard = ({ user, setView, setUser }) => {
     const [activeTab, setActiveTab] = useState('HOME');
     
-    // Custom hook to handle loading and fetching worker data
-    const { workerData, isLoading, error, setWorkerData } = useFetchWorkerData(userName || user?.name);
+    const { workerData, isLoading, error, setWorkerData } = useFetchWorkerData(user?.name, user?.id, user?.skill);
 
     const updateActiveJobs = (newJob) => {
-        setWorkerData(prevData => {
-            const newActiveJobs = [newJob, ...prevData.activeJobs];
-            // Update the 'Active Jobs' stat value immediately
-            const updatedStats = prevData.stats.map(stat => 
-                stat.label === 'Active Jobs' ? { ...stat, value: newActiveJobs.length } : stat
-            );
-
-            return {
-                ...prevData,
-                activeJobs: newActiveJobs,
-                stats: updatedStats
-            };
-        });
+        setWorkerData(prevData => ({
+            ...prevData,
+            activeJobs: [newJob, ...prevData.activeJobs],
+            jobRequests: prevData.jobRequests.filter(j => j.id !== newJob.id)
+        }));
     };
     
     const handleLogout = () => {
@@ -41,15 +32,27 @@ const WorkerDashboard = ({ setView, userName, user, setUser }) => {
 
         switch (activeTab) {
             case 'HOME':
-                return <WorkerHome data={workerData} handleSetTab={setActiveTab} isLoading={isLoading} />;
+                return <WorkerHome 
+                    data={workerData} 
+                    handleSetTab={setActiveTab} 
+                    isLoading={isLoading}
+                    updateActiveJobs={updateActiveJobs}
+                    workerId={user?.id}
+                />;
             case 'JOBS':
-                return <JobRequests handleSetTab={setActiveTab} workerData={workerData} updateActiveJobs={updateActiveJobs} />;
+                return <JobRequests handleSetTab={setActiveTab} workerData={workerData} />;
             case 'PROFILE':
-                return <WorkerProfile data={workerData} />;
+                return <WorkerProfile data={user} />;
             case 'SETTINGS':
                 return <WorkerSettings />;
             default:
-                return <WorkerHome data={workerData} handleSetTab={setActiveTab} isLoading={isLoading} />;
+                return <WorkerHome 
+                    data={workerData} 
+                    handleSetTab={setActiveTab} 
+                    isLoading={isLoading}
+                    updateActiveJobs={updateActiveJobs}
+                    workerId={user?.id}
+                />;
         }
     };
 
@@ -62,13 +65,35 @@ const WorkerDashboard = ({ setView, userName, user, setUser }) => {
                         <h1 className={styles.appName}>AyosNow</h1>
                     </div>
                     <div className={styles.navLinks}>
-                        <button className={activeTab === 'HOME' ? styles.navLinkActive : styles.navLink} onClick={() => setActiveTab('HOME')}><Home size={20} /> Home</button>
-                        <button className={activeTab === 'JOBS' ? styles.navLinkActive : styles.navLink} onClick={() => setActiveTab('JOBS')}><FileText size={20} /> Job Requests</button>
-                        <button className={activeTab === 'PROFILE' ? styles.navLinkActive : styles.navLink} onClick={() => setActiveTab('PROFILE')}><User size={20} /> Profile</button>
-                        <button className={activeTab === 'SETTINGS' ? styles.navLinkActive : styles.navLink} onClick={() => setActiveTab('SETTINGS')}><Settings size={20} /> Settings</button>
+                        <button 
+                            className={activeTab === 'HOME' ? styles.navLinkActive : styles.navLink} 
+                            onClick={() => setActiveTab('HOME')}
+                        >
+                            <Home size={20} /> Home
+                        </button>
+                        <button 
+                            className={activeTab === 'JOBS' ? styles.navLinkActive : styles.navLink} 
+                            onClick={() => setActiveTab('JOBS')}
+                        >
+                            <FileText size={20} /> My Jobs
+                        </button>
+                        <button 
+                            className={activeTab === 'PROFILE' ? styles.navLinkActive : styles.navLink} 
+                            onClick={() => setActiveTab('PROFILE')}
+                        >
+                            <User size={20} /> Profile
+                        </button>
+                        <button 
+                            className={activeTab === 'SETTINGS' ? styles.navLinkActive : styles.navLink} 
+                            onClick={() => setActiveTab('SETTINGS')}
+                        >
+                            <Settings size={20} /> Settings
+                        </button>
                     </div>
                     <div className={styles.userActions}>
-                        <button className={styles.iconButton} aria-label="Notifications"><Bell size={20} /></button>
+                        <button className={styles.iconButton} aria-label="Notifications">
+                            <Bell size={20} />
+                        </button>
                         <button onClick={handleLogout} className={styles.logoutButton}>
                             <LogOut size={18} />
                             <span>Logout</span>
