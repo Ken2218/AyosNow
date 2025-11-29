@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Loader } from 'lucide-react';
 import styles from '../../../styles/UserBookingFlow.module.css';
 
-export const BookingFlow = ({ handleSetTab, updateActiveBookings, userId }) => {
+export const BookingFlow = ({ handleSetTab, updateActiveBookings, userId, userData }) => {
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [taskDescription, setTaskDescription] = useState('');
     const [selectedDateTime, setSelectedDateTime] = useState('');
@@ -22,6 +22,8 @@ export const BookingFlow = ({ handleSetTab, updateActiveBookings, userId }) => {
 
         setIsSubmitting(true);
 
+        const customerAddress = userData?.address || "Address not provided";
+
         try {
             const response = await fetch('http://localhost:8080/api/bookings', {
                 method: 'POST',
@@ -31,7 +33,7 @@ export const BookingFlow = ({ handleSetTab, updateActiveBookings, userId }) => {
                     service: selectedCategory,
                     description: taskDescription,
                     scheduledTime: selectedDateTime,
-                    location: "123 Main Street, City"
+                    location: customerAddress,
                 })
             });
 

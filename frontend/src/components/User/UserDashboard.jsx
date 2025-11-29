@@ -64,11 +64,12 @@ const UserDashboard = ({ user, setView, setUser }) => {
                     handleSetTab={setActiveTab} 
                     updateActiveBookings={updateActiveBookings} 
                     userId={user?.id}
+                    userData={userData}
                 />;
             case 'HISTORY':
                 return <BookingHistory data={userData} />;
             case 'PROFILE':
-                return <UserProfile data={userData} />;
+                return <UserProfile data={{ ...userData, id: user?.id }} />;
             default:
                 return <UserHome 
                     data={userData} 

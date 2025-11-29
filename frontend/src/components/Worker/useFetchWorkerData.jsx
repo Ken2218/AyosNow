@@ -31,7 +31,7 @@ export const useFetchWorkerData = (initialWorkerName, workerId, skill) => {
             setError(null);
 
             try {
-                // FETCH ALL PENDING BOOKINGS (not filtered by skill)
+                // FETCH ALL PENDING BOOKINGS
                 const url = `http://localhost:8080/api/bookings/pending`;
                 console.log('\n📋 Fetching ALL pending bookings from:', url);
                 
@@ -43,13 +43,12 @@ export const useFetchWorkerData = (initialWorkerName, workerId, skill) => {
                     console.log('✅ Pending bookings received:', pendingBookings);
                     console.log('Total available jobs:', pendingBookings.length);
                     
-                    // Transform bookings
                     jobRequests = pendingBookings.map(booking => {
                         console.log(`📦 Job ${booking.id}:`, {
                             service: booking.service,
                             customer: booking.customerName,
-                            time: booking.scheduledTime,
-                            matchesSkill: booking.service.toLowerCase() === skill?.toLowerCase()
+                            location: booking.location,
+                            time: booking.scheduledTime
                         });
                         
                         return {
@@ -74,12 +73,10 @@ export const useFetchWorkerData = (initialWorkerName, workerId, skill) => {
                     console.log('Transformed job requests:', jobRequests);
                 } else {
                     console.error('Failed to fetch pending bookings:', pendingResponse.status);
-                    const errorText = await pendingResponse.text();
-                    console.error('Error response:', errorText);
                 }
 
                 // Get worker's accepted jobs
-                console.log('Fetching worker accepted jobs...');
+                console.log('\n✅ Fetching worker accepted jobs...');
                 const acceptedResponse = await fetch(`http://localhost:8080/api/bookings/worker/${workerId}`);
                 let activeJobs = [];
 
@@ -100,7 +97,7 @@ export const useFetchWorkerData = (initialWorkerName, workerId, skill) => {
                         }) : 'Not specified',
                         status: booking.status,
                         color: 'statusGreen',
-                        address: booking.location,
+                        address: booking.location || 'Location not set',
                         description: booking.description
                     }));
                 }
@@ -110,6 +107,16 @@ export const useFetchWorkerData = (initialWorkerName, workerId, skill) => {
                 console.log('Job Requests (Available):', jobRequests.length);
                 console.log('Active Jobs (Accepted):', activeJobs.length);
                 console.log('==========================================\n');
+
+                setWorkerData({
+                    name: initialWorkerName || 'Pro Account',
+                    email: initialWorkerName ? initialWorkerName.toLowerCase().replace(/\s/g, '.') + '@ayosnow.pro' : 'pro@ayosnow.pro',
+                    location: 'Central District, City',
+                    skill: skill,
+                    rating: 4.9,
+                    activeJobs,
+                    jobRequests
+                });
 
             } catch (err) {
                 console.error('ERROR fetching worker data:', err);

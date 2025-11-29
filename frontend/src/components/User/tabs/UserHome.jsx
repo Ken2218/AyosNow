@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
-import { Search, ChevronRight, Clock, MapPin, Trash2, RefreshCw } from 'lucide-react';
-import styles from '../../../styles/UserDashboard.module.css';
+import { RefreshCw, Clock, MapPin, Phone, Trash2, Calendar } from 'lucide-react';
+import styles from '../../../styles/UserHome.module.css';
+import dashboardStyles from '../../../styles/UserDashboard.module.css';
 import { LoadingSkeleton } from '../../LoadingSkeleton';
 
 export const UserHome = ({ data, handleSetTab, isLoading, onDeleteBooking }) => {
@@ -17,201 +18,158 @@ export const UserHome = ({ data, handleSetTab, isLoading, onDeleteBooking }) => 
         }
     };
 
+    const getStatusClass = (status) => {
+        switch(status) {
+            case 'COMPLETED': return styles.statusCompleted;
+            case 'CANCELLED': return styles.statusCancelled;
+            case 'EN_ROUTE': return styles.statusEnRoute;
+            case 'ACCEPTED': return styles.statusAccepted;
+            case 'IN_PROGRESS': return styles.statusInProgress;
+            case 'PENDING': return styles.statusPending;
+            default: return styles.statusPending;
+        }
+    };
+
+    const getStatusMessage = (status) => {
+        switch(status) {
+            case 'COMPLETED':
+                return { text: 'Service Completed Successfully!', class: styles.messageCompleted };
+            case 'CANCELLED':
+                return { text: 'Booking Cancelled', class: styles.messageCancelled };
+            case 'ACCEPTED':
+                return { text: 'Worker Accepted - Service In Progress', class: styles.messageAccepted };
+            case 'IN_PROGRESS':
+                return { text: 'Work In Progress', class: styles.messageInProgress };
+            case 'EN_ROUTE':
+                return { text: 'Worker is on the way', class: styles.messageEnRoute };
+            default:
+                return null;
+        }
+    };
+
     return (
         <>
             <section className={styles.heroSection}>
-                <h2 className={styles.heroTitle}>
-                    Hello, {data.name}! Let's get things fixed.
-                </h2>
-                <div className={styles.searchWrapper}>
-                    <Search className={styles.searchIcon} size={20} />
-                    <input 
-                        type="text" 
-                        placeholder="What needs fixing? Try 'Leaky faucet', 'Electrician'..." 
-                        className={styles.searchInput}
-                    />
-                    <button onClick={() => handleSetTab('BOOKING')} className={styles.searchButton}>
-                        Find Pro
-                    </button>
-                </div>
+                <h2 className={styles.heroTitle}>Hello, {data.name}!</h2>
+                <p className={styles.heroSubtitle}>Let's get things fixed and done right.</p>
             </section>
 
             {isLoading ? (
                 <LoadingSkeleton />
             ) : (
-                <div className={styles.gridContainer}>
-                    <div className={styles.leftColumn}>
-                        <div className={styles.sectionHeader}>
-                            <h3>Current Bookings ({data.activeBookings.length})</h3>
-                            <div style={{ display: 'flex', gap: '10px' }}>
-                                <button 
-                                    className={styles.viewAllLink} 
-                                    onClick={handleRefresh}
-                                    disabled={isRefreshing}
-                                    style={{ display: 'flex', alignItems: 'center', gap: '5px' }}
-                                >
-                                    <RefreshCw size={14} className={isRefreshing ? 'spinning' : ''} />
-                                    {isRefreshing ? 'Refreshing...' : 'Refresh'}
-                                </button>
-                            </div>
+                <>
+                    <div className={styles.sectionHeader}>
+                        <h3 className={styles.sectionTitle}>
+                            Your Bookings ({data.activeBookings.length})
+                        </h3>
+                        <div className={styles.headerActions}>
+                            <button 
+                                className={styles.refreshButton}
+                                onClick={handleRefresh}
+                                disabled={isRefreshing}
+                            >
+                                <RefreshCw size={16} className={isRefreshing ? styles.spinning : ''} />
+                                {isRefreshing ? 'Refreshing...' : 'Refresh'}
+                            </button>
                         </div>
-                        <div className={styles.bookingsList}>
-                            {data.activeBookings.length > 0 ? (
-                                data.activeBookings.map((booking) => (
+                    </div>
+
+                    {data.activeBookings.length > 0 ? (
+                        <div className={styles.bookingsGrid}>
+                            {data.activeBookings.map((booking) => {
+                                const statusMessage = getStatusMessage(booking.status);
+                                
+                                return (
                                     <div key={booking.id} className={styles.bookingCard}>
-                                        <div className={styles.cardTop}>
-                                            <div>
-                                                <h4 className={styles.serviceTitle}>{booking.service}</h4>
-                                                <p className={styles.providerName}>
-                                                    Provider: <strong>{booking.provider}</strong>
-                                                </p>
+                                        <div className={styles.cardHeader}>
+                                            <div className={styles.serviceInfo}>
+                                                <h4>{booking.service}</h4>
+                                                <span className={styles.providerTag}>
+                                                    <Calendar size={14} />
+                                                    <strong>{booking.provider}</strong>
+                                                </span>
                                             </div>
-                                            <span className={`${styles.statusBadge} ${
-                                                booking.status === 'COMPLETED' ? styles.statusGreen :
-                                                booking.status === 'CANCELLED' ? styles.statusRed :
-                                                booking.status === 'EN_ROUTE' ? styles.statusIndigo : 
-                                                booking.status === 'ACCEPTED' ? styles.statusBlue :
-                                                booking.status === 'IN_PROGRESS' ? styles.statusPurple :
-                                                styles.statusYellow
-                                            }`}>
+                                            <span className={`${styles.statusBadge} ${getStatusClass(booking.status)}`}>
                                                 {booking.status.replace('_', ' ')}
                                             </span>
                                         </div>
 
                                         {booking.description && (
-                                            <p style={{ 
-                                                color: '#6b7280', 
-                                                fontSize: '0.875rem', 
-                                                marginTop: '0.5rem',
-                                                fontStyle: 'italic'
-                                            }}>
-                                                "{booking.description}"
-                                            </p>
+                                            <p className={styles.description}>"{booking.description}"</p>
                                         )}
 
                                         <div className={styles.divider}></div>
-                                        
-                                        <div className={styles.cardBottom}>
-                                            <div className={styles.infoItem}>
-                                                <Clock size={16} className={styles.iconGray} />
-                                                <span>{booking.time || 'Time Not Set'}</span>
+
+                                        <div className={styles.detailsSection}>
+                                            <div className={styles.detailRow}>
+                                                <div className={styles.detailIcon}>
+                                                    <Clock size={18} />
+                                                </div>
+                                                <span className={styles.detailText}>
+                                                    {booking.time || 'Time Not Set'}
+                                                </span>
                                             </div>
-                                            <div className={styles.infoItem}>
-                                                <MapPin size={16} className={styles.iconGray} />
-                                                <span>{booking.location || data.address}</span>
+
+                                            <div className={styles.detailRow}>
+                                                <div className={styles.detailIcon}>
+                                                    <MapPin size={18} />
+                                                </div>
+                                                <span className={styles.detailText}>
+                                                    {booking.address || data.address || 'Location not set'}
+                                                </span>
                                             </div>
-                                            {booking.status === 'PENDING' && (
-                                                <button 
-                                                    className={styles.deleteBtn}
-                                                    onClick={() => handleDelete(booking.id)}
-                                                    title="Cancel booking"
-                                                >
-                                                    <Trash2 size={16} />
-                                                </button>
+
+                                            {data.phoneNumber && (
+                                                <div className={styles.detailRow}>
+                                                    <div className={styles.detailIcon}>
+                                                        <Phone size={18} />
+                                                    </div>
+                                                    <span className={styles.detailText}>
+                                                        {data.phoneNumber}
+                                                    </span>
+                                                </div>
                                             )}
                                         </div>
 
-                                        {/* Contact Info Section */}
-                                        {data.phoneNumber && (
-                                            <div style={{
-                                                marginTop: '0.75rem',
-                                                padding: '0.75rem',
-                                                backgroundColor: '#f3f4f6',
-                                                borderRadius: '8px',
-                                                fontSize: '0.875rem'
-                                            }}>
-                                                <div style={{ color: '#6b7280', marginBottom: '0.25rem' }}>
-                                                    Contact: <strong style={{ color: '#1f2937' }}>{data.phoneNumber}</strong>
-                                                </div>
+                                        {statusMessage && (
+                                            <div className={`${styles.statusMessage} ${statusMessage.class}`}>
+                                                {statusMessage.text}
                                             </div>
                                         )}
 
-                                        {/* Show completion message */}
-                                        {booking.status === 'COMPLETED' && (
-                                            <div style={{
-                                                marginTop: '1rem',
-                                                padding: '0.75rem',
-                                                backgroundColor: '#d1fae5',
-                                                color: '#065f46',
-                                                borderRadius: '8px',
-                                                fontSize: '0.875rem',
-                                                fontWeight: '600',
-                                                textAlign: 'center'
-                                            }}>
-                                                ✅ Service Completed Successfully!
-                                            </div>
-                                        )}
-
-                                        {booking.status === 'CANCELLED' && (
-                                            <div style={{
-                                                marginTop: '1rem',
-                                                padding: '0.75rem',
-                                                backgroundColor: '#fee2e2',
-                                                color: '#991b1b',
-                                                borderRadius: '8px',
-                                                fontSize: '0.875rem',
-                                                fontWeight: '600',
-                                                textAlign: 'center'
-                                            }}>
-                                                ❌ Booking Cancelled
-                                            </div>
-                                        )}
-
-                                        {booking.status === 'ACCEPTED' && (
-                                            <div style={{
-                                                marginTop: '1rem',
-                                                padding: '0.75rem',
-                                                backgroundColor: '#dbeafe',
-                                                color: '#1e40af',
-                                                borderRadius: '8px',
-                                                fontSize: '0.875rem',
-                                                fontWeight: '600',
-                                                textAlign: 'center'
-                                            }}>
-                                                🔄 Worker Accepted - Service In Progress
-                                            </div>
-                                        )}
-
-                                        {booking.status === 'IN_PROGRESS' && (
-                                            <div style={{
-                                                marginTop: '1rem',
-                                                padding: '0.75rem',
-                                                backgroundColor: '#e9d5ff',
-                                                color: '#6b21a8',
-                                                borderRadius: '8px',
-                                                fontSize: '0.875rem',
-                                                fontWeight: '600',
-                                                textAlign: 'center'
-                                            }}>
-                                                🔧 Work In Progress
-                                            </div>
-                                        )}
-
-                                        {booking.status === 'EN_ROUTE' && (
-                                            <div style={{
-                                                marginTop: '1rem',
-                                                padding: '0.75rem',
-                                                backgroundColor: '#e0e7ff',
-                                                color: '#3730a3',
-                                                borderRadius: '8px',
-                                                fontSize: '0.875rem',
-                                                fontWeight: '600',
-                                                textAlign: 'center'
-                                            }}>
-                                                🚗 Worker is on the way
+                                        {booking.status === 'PENDING' && (
+                                            <div className={styles.actionButtons}>
+                                                <button 
+                                                    className={styles.cancelButton}
+                                                    onClick={() => handleDelete(booking.id)}
+                                                >
+                                                    <Trash2 size={16} />
+                                                    Cancel Booking
+                                                </button>
                                             </div>
                                         )}
                                     </div>
-                                ))
-                            ) : (
-                                <div className={styles.emptyState}>
-                                    <p>No active or upcoming bookings found.</p>
-                                    <p className={styles.iconGray}>Ready to schedule your next service?</p>
-                                </div>
-                            )}
+                                );
+                            })}
                         </div>
-                    </div>
-                </div>
+                    ) : (
+                        <div className={styles.emptyState}>
+                            <div className={styles.emptyIcon}>
+                                <Calendar size={40} color="#9ca3af" />
+                            </div>
+                            <p>No active bookings</p>
+                            <span className={styles.emptyHint}>
+                                Ready to schedule your next service?
+                            </span>
+                            <button 
+                                className={styles.ctaButton}
+                                onClick={() => handleSetTab('BOOKING')}
+                            >
+                                Book a Service
+                            </button>
+                        </div>
+                    )}
+                </>
             )}
         </>
     );

@@ -5,7 +5,7 @@ export const useFetchUserData = (user) => {
         name: user?.name || 'AyosNow User', 
         email: user?.email || 'default@ayosnow.com',
         phoneNumber: user?.phoneNumber || 'Not provided',
-        address: '123 Main Street, City',
+        address: user?.address || 'Not provided',  // ✅ Use user.address
         activeBookings: [], 
         recentHistory: []
     });
@@ -19,8 +19,8 @@ export const useFetchUserData = (user) => {
                 return;
             }
 
-            // Only show loading spinner on first fetch
-            if (userData.activeBookings.length === 0) {
+            // ✅ FIX: Check if activeBookings exists and has length
+            if (!userData.activeBookings || userData.activeBookings.length === 0) {
                 setIsLoading(true);
             }
             setError(null);
@@ -35,7 +35,6 @@ export const useFetchUserData = (user) => {
                 const bookings = await response.json();
                 console.log('📦 Fetched bookings:', bookings);
                 
-                // Active bookings
                 const activeBookings = bookings
                     .filter(b => ['PENDING', 'ACCEPTED', 'EN_ROUTE', 'IN_PROGRESS'].includes(b.status))
                     .map(b => ({
@@ -51,10 +50,9 @@ export const useFetchUserData = (user) => {
                             minute: '2-digit'
                         }) : 'Time Not Set',
                         description: b.description,
-                        location: b.location || '123 Main Street, City'
+                        location: b.location || 'Location not set'  // ✅ Include location
                     }));
                 
-                // Recent history
                 const recentHistory = bookings
                     .filter(b => b.status === 'COMPLETED' || b.status === 'CANCELLED')
                     .map(b => ({
@@ -70,7 +68,6 @@ export const useFetchUserData = (user) => {
                         provider: b.workerName || 'Unknown'
                     }));
 
-                // Update only bookings, keep user data from signup/login
                 setUserData(prevData => ({
                     ...prevData,
                     activeBookings,
@@ -85,10 +82,8 @@ export const useFetchUserData = (user) => {
             }
         };
 
-        // Initial fetch
         fetchBookings();
 
-        // Auto-refresh every 10 seconds
         const intervalId = setInterval(() => {
             console.log('🔄 Auto-refreshing bookings...');
             fetchBookings();
@@ -96,7 +91,7 @@ export const useFetchUserData = (user) => {
 
         return () => clearInterval(intervalId);
 
-    }, [user?.id]);
+    }, [user?.id]); 
 
     return { userData, isLoading, error, setUserData };
 };

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, Clock, Star } from 'lucide-react';
+import { Calendar, Clock, Star, CheckCircle, XCircle } from 'lucide-react';
 import styles from '../../../styles/UserBookingHistory.module.css';
 
 export const BookingHistory = ({ data }) => {
@@ -7,7 +7,7 @@ export const BookingHistory = ({ data }) => {
         ...data.activeBookings.map(b => ({
             id: b.id,
             service: b.service,
-            provider: b.provider || 'Searching...',
+            provider: b.provider || 'Searching for worker...', // This already has worker name from useFetchUserData
             date: b.time || 'N/A',
             status: b.status,
             rating: null,
@@ -16,9 +16,9 @@ export const BookingHistory = ({ data }) => {
         ...data.recentHistory.map(h => ({
             id: h.id,
             service: h.title,
-            provider: 'Service Pro',
+            provider: h.provider || 'Service Completed', // This has worker name from recentHistory
             date: h.date,
-            status: 'COMPLETED',
+            status: h.status || 'COMPLETED',
             rating: h.rating || null,
             description: ''
         }))
@@ -41,6 +41,14 @@ export const BookingHistory = ({ data }) => {
             default: return styles.statusGray;
         }
     };
+
+    const getStatusIcon = (status) => {
+        switch(status) {
+            case 'COMPLETED': return <CheckCircle size={18} />;
+            case 'CANCELLED': return <XCircle size={18} />;
+            default: return null;
+        }
+    };
     
     return (
         <div className={styles.historyMainContainer}>
@@ -53,12 +61,22 @@ export const BookingHistory = ({ data }) => {
                             <div className={styles.cardHeader}>
                                 <div>
                                     <h3 className={styles.serviceTitle}>{booking.service}</h3>
-                                    <p className={styles.providerName}>Provider: <strong>{booking.provider}</strong></p>
+                                    <p className={styles.providerName}>
+                                        Worker: <strong>{booking.provider}</strong>
+                                    </p>
                                 </div>
-                                <span className={`${styles.statusBadge} ${getStatusStyle(booking.status)}`}>
+                                <span 
+                                    className={`${styles.statusBadge} ${getStatusStyle(booking.status)}`}
+                                    style={{ display: 'flex', alignItems: 'center', gap: '5px' }}
+                                >
+                                    {getStatusIcon(booking.status)}
                                     {booking.status.replace('_', ' ')}
                                 </span>
                             </div>
+                            
+                            {booking.description && (
+                                <p className={styles.bookingDescription}>"{booking.description}"</p>
+                            )}
                             
                             <div className={styles.cardDetails}>
                                 <div className={styles.detailItem}>
@@ -72,9 +90,34 @@ export const BookingHistory = ({ data }) => {
                                     </div>
                                 )}
                             </div>
-                            
-                            {booking.description && (
-                                <p className={styles.bookingDescription}>{booking.description}</p>
+                            {booking.status === 'ACCEPTED' && (
+                                <div style={{
+                                    marginTop: '1rem',
+                                    padding: '0.75rem',
+                                    backgroundColor: '#dbeafe',
+                                    color: '#1e40af',
+                                    borderRadius: '8px',
+                                    fontSize: '0.875rem',
+                                    fontWeight: '600',
+                                    textAlign: 'center'
+                                }}>
+                                    🔄 Worker Accepted - Service In Progress
+                                </div>
+                            )}
+
+                            {booking.status === 'PENDING' && (
+                                <div style={{
+                                    marginTop: '1rem',
+                                    padding: '0.75rem',
+                                    backgroundColor: '#fef3c7',
+                                    color: '#92400e',
+                                    borderRadius: '8px',
+                                    fontSize: '0.875rem',
+                                    fontWeight: '600',
+                                    textAlign: 'center'
+                                }}>
+                                    ⏳ Waiting for worker to accept
+                                </div>
                             )}
                         </div>
                     ))}

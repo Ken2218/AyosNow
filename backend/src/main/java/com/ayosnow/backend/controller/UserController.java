@@ -54,6 +54,7 @@ public class UserController {
             response.put("email", savedUser.getEmail());
             response.put("role", savedUser.getRole().name());
             response.put("phoneNumber", savedUser.getPhoneNumber());
+            response.put("address", savedUser.getAddress());
             response.put("skill", savedUser.getSkill());
             response.put("location", savedUser.getLocation());
             response.put("rating", savedUser.getRating());
@@ -81,6 +82,7 @@ public class UserController {
         response.put("email", user.getEmail());
         response.put("role", user.getRole().name());
         response.put("phoneNumber", user.getPhoneNumber());
+        response.put("address", user.getAddress());
         response.put("skill", user.getSkill());
         response.put("location", user.getLocation());
         response.put("rating", user.getRating());
@@ -88,9 +90,6 @@ public class UserController {
         return ResponseEntity.ok(response);
     }
 
-    /**
-     * Get user profile by ID
-     */
     @GetMapping("/users/{userId}")
     public ResponseEntity<?> getUserProfile(@PathVariable Long userId) {
         try {
@@ -103,9 +102,9 @@ public class UserController {
             response.put("email", user.getEmail());
             response.put("role", user.getRole().name());
             response.put("phoneNumber", user.getPhoneNumber());
+            response.put("address", user.getAddress());
             response.put("skill", user.getSkill());
             response.put("location", user.getLocation());
-            response.put("address", user.getLocation()); // Using location as address for now
             response.put("rating", user.getRating());
 
             return ResponseEntity.ok(response);
@@ -114,23 +113,25 @@ public class UserController {
         }
     }
 
-    /**
-     * Update user profile
-     */
-    @PutMapping("/users/{userId}")
+    @PutMapping("/users/{userId}/profile")
     public ResponseEntity<?> updateUserProfile(@PathVariable Long userId, @RequestBody Map<String, String> updates) {
         try {
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new RuntimeException("User not found"));
 
-            if (updates.containsKey("name")) {
-                user.setName(updates.get("name"));
+            if (updates.containsKey("name") && !updates.get("name").trim().isEmpty()) {
+                user.setName(updates.get("name").trim());
             }
-            if (updates.containsKey("phoneNumber")) {
-                user.setPhoneNumber(updates.get("phoneNumber"));
+            if (updates.containsKey("phoneNumber") && !updates.get("phoneNumber").trim().isEmpty()) {
+                user.setPhoneNumber(updates.get("phoneNumber").trim());
             }
-            if (updates.containsKey("location")) {
-                user.setLocation(updates.get("location"));
+            
+            if (updates.containsKey("address") && !updates.get("address").trim().isEmpty()) {
+                user.setAddress(updates.get("address").trim());
+            }
+            
+            if (updates.containsKey("location") && !updates.get("location").trim().isEmpty()) {
+                user.setLocation(updates.get("location").trim());
             }
 
             User updatedUser = userRepository.save(user);
@@ -140,12 +141,40 @@ public class UserController {
             response.put("name", updatedUser.getName());
             response.put("email", updatedUser.getEmail());
             response.put("phoneNumber", updatedUser.getPhoneNumber());
+            response.put("address", updatedUser.getAddress());
             response.put("location", updatedUser.getLocation());
-            response.put("address", updatedUser.getLocation());
 
             return ResponseEntity.ok(response);
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body("Failed to update profile: " + e.getMessage());
+        }
+    }
+
+    @PutMapping("/users/{userId}/password")
+    public ResponseEntity<?> changePassword(@PathVariable Long userId, @RequestBody Map<String, String> passwordData) {
+        try {
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new RuntimeException("User not found"));
+
+            String currentPassword = passwordData.get("currentPassword");
+            String newPassword = passwordData.get("newPassword");
+
+            if (!user.getPassword().equals(currentPassword)) {
+                return ResponseEntity.badRequest().body("Current password is incorrect");
+            }
+
+            if (newPassword == null || newPassword.trim().length() < 6) {
+                return ResponseEntity.badRequest().body("New password must be at least 6 characters");
+            }
+
+            user.setPassword(newPassword.trim());
+            userRepository.save(user);
+
+            return ResponseEntity.ok("Password changed successfully");
+        } catch (Exception e) {
+            e.printStackTrace();
+            return ResponseEntity.badRequest().body("Failed to change password: " + e.getMessage());
         }
     }
 }
