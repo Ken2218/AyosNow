@@ -1,41 +1,44 @@
 package com.ayosnow.backend.entity;
 
+import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table; // Added to handle potential reserved keyword conflict
 
-// Assuming this is your JPA Entity class
 @Entity
+@Table(name = "User") // Explicitly mapping to the 'User' table
 public class User {
 
-    // Define the Enum Role inside the User class (as implied by the errors)
     public enum Role {
         CUSTOMER,
         WORKER
     }
 
+    // Maps the Java field 'id' (String) to the DB column 'UserID' (VARCHAR)
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "UserID")
+    private String id; 
 
     private String name;
     private String email;
-    private String password; // Should be hashed in a real app!
 
-    @Enumerated(EnumType.STRING) // IMPORTANT: Stores the Enum name as a String in the database
+@Column(name = "password_hash") // <-- Must be lowercase and underscore
+private String password;
+
+    @Enumerated(EnumType.STRING)
     private Role role;
 
     private String skill; // For WORKERs
 
-    // Getters and Setters
-    public Long getId() {
+    // --- Getters and Setters ---
+
+    public String getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(String id) {
         this.id = id;
     }
 
@@ -67,7 +70,6 @@ public class User {
         return role;
     }
 
-    // Setter now takes the Role Enum
     public void setRole(Role role) {
         this.role = role;
     }

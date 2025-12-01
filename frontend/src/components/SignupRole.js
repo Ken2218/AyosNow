@@ -20,13 +20,19 @@ export default function SignupRole({ onLoginClick, setView, setUser }) {
       return;
     }
 
+    // --- CORRECTION: Conditionally construct the payload ---
     const payload = {
       name,
       email,
       password,
       role,
-      skill: role === 'WORKER' ? skill : null,
     };
+    
+    // Only include skill if the user selected the WORKER role and provided a skill
+    if (role === 'WORKER' && skill) {
+        payload.skill = skill;
+    }
+    // -----------------------------------------------------
 
     try {
       const res = await fetch('http://localhost:8080/api/auth/register', {
@@ -116,6 +122,7 @@ export default function SignupRole({ onLoginClick, setView, setUser }) {
           className={loginStyles.input}
           value={name}
           onChange={(e) => setName(e.target.value)}
+          required
         />
       </div>
 
@@ -128,6 +135,7 @@ export default function SignupRole({ onLoginClick, setView, setUser }) {
           className={loginStyles.input}
           value={email}
           onChange={(e) => setEmail(e.target.value)}
+          required
         />
       </div>
 
@@ -141,6 +149,8 @@ export default function SignupRole({ onLoginClick, setView, setUser }) {
             className={loginStyles.input}
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            required
+            minLength={6}
           />
           <button
             type="button"
@@ -162,6 +172,8 @@ export default function SignupRole({ onLoginClick, setView, setUser }) {
             className={loginStyles.input}
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
+            required
+            minLength={6}
           />
           <button
             type="button"
@@ -181,6 +193,7 @@ export default function SignupRole({ onLoginClick, setView, setUser }) {
             className={loginStyles.input}
             value={skill}
             onChange={(e) => setSkill(e.target.value)}
+            required // Make skill required for workers
           >
             <option value="">Select</option>
             <option>Electrician</option>
