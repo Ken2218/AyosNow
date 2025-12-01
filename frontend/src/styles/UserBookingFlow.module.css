@@ -1,0 +1,257 @@
+/* --- Booking Flow Specific Styles --- */
+
+.bookingFlowContainer {
+    max-width: 900px;
+    margin: 0 auto;
+    padding-top: 1rem;
+}
+
+.profileHeader {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #111827;
+    margin-bottom: 0.5rem;
+}
+
+.bookingStepCard {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 1rem;
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    transition: box-shadow 0.3s ease;
+}
+
+.bookingStepCard:hover {
+    box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+.bookingStepCard h3 {
+    font-size: 1.25rem;
+    color: #4f46e5;
+    margin-top: 0;
+    border-bottom: 2px solid #e0e7ff;
+    padding-bottom: 0.5rem;
+    margin-bottom: 1.5rem;
+    font-weight: 700;
+}
+
+/* Category Selection Grid */
+.categoryGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 1rem;
+}
+
+.categoryItem {
+    background: #f9fafb;
+    border: 2px solid #e5e7eb;
+    border-radius: 0.75rem;
+    padding: 1.5rem 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-align: center;
+    font-size: 0.95rem;
+}
+
+.categoryItem:hover {
+    border-color: #a5b4fc;
+    background: #eff6ff;
+    transform: translateY(-2px);
+}
+
+.categoryItem.selected {
+    border-color: #4f46e5;
+    background: #e0e7ff;
+    color: #4338ca;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.2);
+    font-weight: 700;
+}
+
+/* Task Description Input */
+.taskInput {
+    width: 100%;
+    padding: 1rem;
+    border: 2px solid #d1d5db;
+    border-radius: 0.75rem;
+    font-size: 1rem;
+    font-family: inherit;
+    resize: vertical;
+    min-height: 120px;
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    line-height: 1.5;
+}
+
+.taskInput:focus {
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+}
+
+.taskInput::placeholder {
+    color: #9ca3af;
+}
+
+/* Date & Time Picker Styles */
+.dateTimeWrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.dateTimeInput {
+    width: 100%;
+    padding: 1rem;
+    border: 2px solid #d1d5db;
+    border-radius: 0.75rem;
+    font-size: 1rem;
+    font-family: inherit;
+    color: #111827;
+    background-color: #ffffff;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    outline: none;
+}
+
+.dateTimeInput:hover {
+    border-color: #a5b4fc;
+    background-color: #f9fafb;
+}
+
+.dateTimeInput:focus {
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+    background-color: #ffffff;
+}
+
+/* Custom styling for calendar icon in date input */
+.dateTimeInput::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    padding: 0.25rem;
+    border-radius: 0.25rem;
+    transition: background-color 0.2s;
+}
+
+.dateTimeInput::-webkit-calendar-picker-indicator:hover {
+    background-color: #e0e7ff;
+}
+
+/* Firefox date input styling */
+.dateTimeInput::-moz-focus-inner {
+    border: 0;
+}
+
+/* Date/Time Helper Text */
+.helperText {
+    font-size: 0.875rem;
+    color: #6b7280;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.helperIcon {
+    color: #9ca3af;
+}
+
+/* Proceed/Submit Button */
+.proceedButton {
+    width: 100%;
+    background-color: #4f46e5;
+    color: white;
+    border: none;
+    padding: 1rem 1.5rem;
+    border-radius: 0.75rem;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.75rem;
+    transition: all 0.2s ease;
+    margin-top: 1rem;
+}
+
+.proceedButton:hover:not(:disabled) {
+    background-color: #4338ca;
+    box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
+    transform: translateY(-1px);
+}
+
+.proceedButton:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.proceedButton:disabled {
+    background-color: #9ca3af;
+    cursor: not-allowed;
+    box-shadow: none;
+    opacity: 0.6;
+}
+
+/* Spinner for Loading State */
+.spinnerWhite {
+    animation: spin 1s linear infinite;
+    color: white;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .bookingFlowContainer {
+        padding: 0 1rem;
+    }
+
+    .bookingStepCard {
+        padding: 1.5rem;
+    }
+
+    .categoryGrid {
+        grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+        gap: 0.75rem;
+    }
+
+    .categoryItem {
+        padding: 1rem 0.75rem;
+        font-size: 0.875rem;
+    }
+
+    .profileHeader {
+        font-size: 1.5rem;
+    }
+}
+
+/* Animation for Step Cards */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.bookingStepCard {
+    animation: fadeInUp 0.4s ease-out;
+}
+
+.bookingStepCard:nth-child(2) {
+    animation-delay: 0.1s;
+}
+
+.bookingStepCard:nth-child(3) {
+    animation-delay: 0.2s;
+}
+
+.bookingStepCard:nth-child(4) {
+    animation-delay: 0.3s;
+}
