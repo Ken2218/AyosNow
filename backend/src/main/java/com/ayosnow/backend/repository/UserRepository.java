@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import com.ayosnow.backend.entity.User;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Long> {
+public interface UserRepository extends JpaRepository<User, String> { // PK type is String
 
     Optional<User> findByEmail(String email);
 }
