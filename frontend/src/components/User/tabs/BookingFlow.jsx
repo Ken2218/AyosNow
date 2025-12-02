@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
-import { Loader } from 'lucide-react';
+import { Loader, MapPin } from 'lucide-react';
 import styles from '../../../styles/UserBookingFlow.module.css';
 
 export const BookingFlow = ({ handleSetTab, updateActiveBookings, userId, userData }) => {
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [taskDescription, setTaskDescription] = useState('');
     const [selectedDateTime, setSelectedDateTime] = useState('');
+    const [location, setLocation] = useState('Enter location');
     const [isSubmitting, setIsSubmitting] = useState(false);
 
     const getMinDateTime = () => {
@@ -15,14 +16,12 @@ export const BookingFlow = ({ handleSetTab, updateActiveBookings, userId, userDa
     };
 
     const handleSubmit = async () => {
-        if (!selectedCategory || taskDescription.length < 10 || !selectedDateTime) {
+        if (!selectedCategory || taskDescription.length < 10 || !selectedDateTime || !location || location === 'Enter location') {
             alert('Please complete all fields');
             return;
         }
 
         setIsSubmitting(true);
-
-        const customerAddress = userData?.address || "Address not provided";
 
         try {
             const response = await fetch('http://localhost:8080/api/bookings', {
@@ -33,14 +32,14 @@ export const BookingFlow = ({ handleSetTab, updateActiveBookings, userId, userDa
                     service: selectedCategory,
                     description: taskDescription,
                     scheduledTime: selectedDateTime,
-                    location: customerAddress,
+                    location: location,
                 })
             });
 
             if (response.ok) {
                 const savedBooking = await response.json();
                 console.log('Booking created:', savedBooking);
-                
+
                 const newBooking = {
                     id: savedBooking.id,
                     service: savedBooking.service,
@@ -53,7 +52,8 @@ export const BookingFlow = ({ handleSetTab, updateActiveBookings, userId, userDa
                         hour: 'numeric',
                         minute: '2-digit'
                     }),
-                    description: savedBooking.description
+                    description: savedBooking.description,
+                    location: location
                 };
 
                 updateActiveBookings(newBooking);
@@ -75,6 +75,7 @@ export const BookingFlow = ({ handleSetTab, updateActiveBookings, userId, userDa
         <div className={styles.bookingFlowContainer}>
             <h2 className={styles.profileHeader}>Schedule a New Service</h2>
 
+            {/* Step 1: Category */}
             <div className={styles.bookingStepCard}>
                 <h3>Select Service Category</h3>
                 <div className={styles.categoryGrid}>
@@ -90,6 +91,7 @@ export const BookingFlow = ({ handleSetTab, updateActiveBookings, userId, userDa
                 </div>
             </div>
 
+            {/* Step 2: Task Description */}
             <div className={styles.bookingStepCard}>
                 <h3>Describe the Task</h3>
                 <textarea
@@ -101,6 +103,7 @@ export const BookingFlow = ({ handleSetTab, updateActiveBookings, userId, userDa
                 />
             </div>
 
+            {/* Step 3: Date/Time & Location */}
             <div className={styles.bookingStepCard}>
                 <h3>Select Date & Time</h3>
                 <input
@@ -110,12 +113,33 @@ export const BookingFlow = ({ handleSetTab, updateActiveBookings, userId, userDa
                     onChange={(e) => setSelectedDateTime(e.target.value)}
                     min={getMinDateTime()}
                 />
+
+                <div className={styles.locationWrapper}>
+                    <label className={styles.locationLabel}>
+                        <MapPin size={16} /> Location
+                    </label>
+                    <input
+                        type="text"
+                        className={styles.locationInput}
+                        placeholder="Enter location"
+                        value={location}
+                        onChange={(e) => setLocation(e.target.value)}
+                    />
+                </div>
             </div>
 
+            {/* Submit Button */}
             <button
                 className={styles.proceedButton}
                 onClick={handleSubmit}
-                disabled={isSubmitting || !selectedCategory || taskDescription.length < 10 || !selectedDateTime}
+                disabled={
+                    isSubmitting ||
+                    !selectedCategory ||
+                    taskDescription.length < 10 ||
+                    !selectedDateTime ||
+                    !location ||
+                    location === 'Enter location'
+                }
             >
                 {isSubmitting ? (
                     <>

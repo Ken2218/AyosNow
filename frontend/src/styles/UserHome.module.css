@@ -1,4 +1,4 @@
-/* Hero Section */
+/* ================= Hero Section ================= */
 .heroSection {
     margin-bottom: 2rem;
     padding: 2rem;
@@ -20,7 +20,7 @@
     opacity: 0.9;
 }
 
-/* Header Section */
+/* ================= Header Section ================= */
 .sectionHeader {
     display: flex;
     justify-content: space-between;
@@ -65,7 +65,7 @@
     cursor: not-allowed;
 }
 
-/* Bookings Grid */
+/* ================= Bookings Grid ================= */
 .bookingsGrid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
@@ -78,7 +78,7 @@
     }
 }
 
-/* Booking Card */
+/* ================= Booking Card ================= */
 .bookingCard {
     background: white;
     border-radius: 1rem;
@@ -124,7 +124,15 @@
     color: #111827;
 }
 
-/* Status Badge */
+/* Location Text Styling to Match Description */
+.locationText {
+    font-style: italic;
+    color: #6b7280; /* same as description color */
+    font-size: 0.875rem; /* same as description font size */
+}
+
+
+/* ================= Status Badge ================= */
 .statusBadge {
     padding: 0.4rem 1rem;
     border-radius: 999px;
@@ -135,37 +143,14 @@
     letter-spacing: 0.025em;
 }
 
-.statusPending {
-    background-color: #fef3c7;
-    color: #92400e;
-}
+.statusPending { background-color: #fef3c7; color: #92400e; }
+.statusAccepted { background-color: #dbeafe; color: #1e40af; }
+.statusInProgress { background-color: #e9d5ff; color: #6b21a8; }
+.statusEnRoute { background-color: #e0e7ff; color: #3730a3; }
+.statusCompleted { background-color: #d1fae5; color: #065f46; }
+.statusCancelled { background-color: #fee2e2; color: #991b1b; }
 
-.statusAccepted {
-    background-color: #dbeafe;
-    color: #1e40af;
-}
-
-.statusInProgress {
-    background-color: #e9d5ff;
-    color: #6b21a8;
-}
-
-.statusEnRoute {
-    background-color: #e0e7ff;
-    color: #3730a3;
-}
-
-.statusCompleted {
-    background-color: #d1fae5;
-    color: #065f46;
-}
-
-.statusCancelled {
-    background-color: #fee2e2;
-    color: #991b1b;
-}
-
-/* Description */
+/* ================= Description ================= */
 .description {
     color: #6b7280;
     font-size: 0.875rem;
@@ -174,14 +159,14 @@
     line-height: 1.5;
 }
 
-/* Divider */
+/* ================= Divider ================= */
 .divider {
     height: 1px;
     background: linear-gradient(to right, transparent, #e5e7eb, transparent);
     margin: 1rem 0;
 }
 
-/* Details Section */
+/* ================= Details Section ================= */
 .detailsSection {
     display: flex;
     flex-direction: column;
@@ -208,12 +193,9 @@
     color: #6b7280;
 }
 
-.detailText {
-    flex: 1;
-    font-weight: 500;
-}
+.detailText { flex: 1; font-weight: 500; }
 
-/* Contact Info */
+/* ================= Contact Info ================= */
 .contactInfo {
     margin-top: 1rem;
     padding: 0.875rem 1rem;
@@ -236,7 +218,7 @@
     font-weight: 600;
 }
 
-/* Status Messages */
+/* ================= Status Messages ================= */
 .statusMessage {
     margin-top: 1rem;
     padding: 0.875rem 1rem;
@@ -250,42 +232,14 @@
     gap: 0.5rem;
 }
 
-.messageCompleted {
-    background-color: #d1fae5;
-    color: #065f46;
-    border-left: 3px solid #10b981;
-}
+.messageCompleted { background-color: #d1fae5; color: #065f46; border-left: 3px solid #10b981; }
+.messageCancelled { background-color: #fee2e2; color: #991b1b; border-left: 3px solid #ef4444; }
+.messageAccepted { background-color: #dbeafe; color: #1e40af; border-left: 3px solid #3b82f6; }
+.messageInProgress { background-color: #e9d5ff; color: #6b21a8; border-left: 3px solid #a855f7; }
+.messageEnRoute { background-color: #e0e7ff; color: #3730a3; border-left: 3px solid #6366f1; }
 
-.messageCancelled {
-    background-color: #fee2e2;
-    color: #991b1b;
-    border-left: 3px solid #ef4444;
-}
-
-.messageAccepted {
-    background-color: #dbeafe;
-    color: #1e40af;
-    border-left: 3px solid #3b82f6;
-}
-
-.messageInProgress {
-    background-color: #e9d5ff;
-    color: #6b21a8;
-    border-left: 3px solid #a855f7;
-}
-
-.messageEnRoute {
-    background-color: #e0e7ff;
-    color: #3730a3;
-    border-left: 3px solid #6366f1;
-}
-
-/* Action Buttons */
-.actionButtons {
-    display: flex;
-    gap: 0.5rem;
-    margin-top: 1rem;
-}
+/* ================= Action Buttons ================= */
+.actionButtons { display: flex; gap: 0.5rem; margin-top: 1rem; }
 
 .cancelButton {
     flex: 1;
@@ -308,13 +262,17 @@
     border-color: #ef4444;
 }
 
-/* Empty State */
+/* ================= Empty State ================= */
 .emptyState {
     text-align: center;
     padding: 4rem 2rem;
     background: white;
     border-radius: 1rem;
     border: 2px dashed #e5e7eb;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
 }
 
 .emptyIcon {
@@ -325,14 +283,14 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 0 auto 1.5rem;
+    margin-bottom: 1rem;
 }
 
 .emptyState p {
     font-size: 1.125rem;
     color: #111827;
     font-weight: 600;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.25rem;
 }
 
 .emptyHint {
@@ -340,8 +298,9 @@
     color: #6b7280;
 }
 
+/* ================= CTA Button ================= */
 .ctaButton {
-    margin-top: 1.5rem;
+    margin-top: 1rem;
     background-color: #4f46e5;
     color: white;
     border: none;
@@ -350,6 +309,7 @@
     font-weight: 600;
     cursor: pointer;
     transition: all 0.2s;
+    align-self: center;
 }
 
 .ctaButton:hover {
@@ -358,13 +318,7 @@
     box-shadow: 0 4px 12px rgba(79, 70, 229, 0.4);
 }
 
-/* Spinning animation */
-@keyframes spin {
-    to {
-        transform: rotate(360deg);
-    }
-}
+/* ================= Spinning Animation ================= */
+@keyframes spin { to { transform: rotate(360deg); } }
 
-.spinning {
-    animation: spin 1s linear infinite;
-}
+.spinning { animation: spin 1s linear infinite; }

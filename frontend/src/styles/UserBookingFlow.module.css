@@ -157,6 +157,42 @@
     color: #9ca3af;
 }
 
+/* Location Input */
+.locationWrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.locationLabel {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: #4f46e5;
+    font-weight: 600;
+}
+
+.locationInput {
+    padding: 0.75rem 1rem;
+    border: 2px solid #d1d5db;
+    border-radius: 0.75rem;
+    font-size: 1rem;
+    outline: none;
+    width: 100%;
+    transition: all 0.2s ease;
+}
+
+.locationInput:focus {
+    border-color: #4f46e5;
+    box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15);
+}
+
+.locationInput::placeholder {
+    color: #9ca3af;
+}
+
 /* Proceed/Submit Button */
 .proceedButton {
     width: 100%;

@@ -3,7 +3,7 @@ import styles from '../../../styles/workerdashboard.module.css';
 
 export const WorkerProfile = ({ data }) => (
     <div className={styles.profileContainer}>
-        <h2 className={styles.profileHeader}>My Professional Profile 💼</h2>
+        <h2 className={styles.profileHeader}>My Professional Profile</h2>
         <div className={styles.profileCard}>
             <div className={styles.profileDetail}>
                 <label>Full Name</label>

@@ -1,5 +1,5 @@
 import React from 'react';
-import { Calendar, Clock, Star, CheckCircle, XCircle } from 'lucide-react';
+import { Calendar, Clock, Star, CheckCircle, XCircle, MapPin, Phone } from 'lucide-react';
 import styles from '../../../styles/UserBookingHistory.module.css';
 
 export const BookingHistory = ({ data }) => {
@@ -7,29 +7,27 @@ export const BookingHistory = ({ data }) => {
         ...data.activeBookings.map(b => ({
             id: b.id,
             service: b.service,
-            provider: b.provider || 'Searching for worker...', // This already has worker name from useFetchUserData
+            provider: b.provider || 'Searching for worker...',
             date: b.time || 'N/A',
             status: b.status,
             rating: null,
-            description: b.description || ''
+            description: b.description || '',
+            location: b.location || 'Location not set'
         })),
         ...data.recentHistory.map(h => ({
             id: h.id,
             service: h.title,
-            provider: h.provider || 'Service Completed', // This has worker name from recentHistory
+            provider: h.provider || 'Service Completed',
             date: h.date,
             status: h.status || 'COMPLETED',
             rating: h.rating || null,
-            description: ''
+            description: '',
+            location: h.location || 'Location not set'
         }))
     ];
-    
-    const sortedBookings = allBookings.sort((a, b) => {
-        const dateA = new Date(a.date);
-        const dateB = new Date(b.date);
-        return dateB - dateA;
-    });
-    
+
+    const sortedBookings = allBookings.sort((a, b) => new Date(b.date) - new Date(a.date));
+
     const getStatusStyle = (status) => {
         switch(status) {
             case 'COMPLETED': return styles.statusGreen;
@@ -49,11 +47,11 @@ export const BookingHistory = ({ data }) => {
             default: return null;
         }
     };
-    
+
     return (
         <div className={styles.historyMainContainer}>
-            <h2 className={styles.profileHeader}>Booking History 📋</h2>
-            
+            <h2 className={styles.profileHeader}>Booking History</h2>
+
             {sortedBookings.length > 0 ? (
                 <div className={styles.bookingsList}>
                     {sortedBookings.map((booking) => (
@@ -65,24 +63,31 @@ export const BookingHistory = ({ data }) => {
                                         Worker: <strong>{booking.provider}</strong>
                                     </p>
                                 </div>
-                                <span 
-                                    className={`${styles.statusBadge} ${getStatusStyle(booking.status)}`}
-                                    style={{ display: 'flex', alignItems: 'center', gap: '5px' }}
-                                >
+                                <span className={`${styles.statusBadge} ${getStatusStyle(booking.status)}`}>
                                     {getStatusIcon(booking.status)}
                                     {booking.status.replace('_', ' ')}
                                 </span>
                             </div>
-                            
+
                             {booking.description && (
                                 <p className={styles.bookingDescription}>"{booking.description}"</p>
                             )}
-                            
+
                             <div className={styles.cardDetails}>
                                 <div className={styles.detailItem}>
                                     <Clock size={16} className={styles.iconGray} />
                                     <span>{booking.date}</span>
                                 </div>
+                                <div className={styles.detailItem}>
+                                    <MapPin size={16} className={styles.iconGray} />
+                                    <span>{booking.location}</span>
+                                </div>
+                                {data.phoneNumber && (
+                                    <div className={styles.detailItem}>
+                                        <Phone size={16} className={styles.iconGray} />
+                                        <span>{data.phoneNumber}</span>
+                                    </div>
+                                )}
                                 {booking.rating && (
                                     <div className={styles.detailItem}>
                                         <Star size={16} className={styles.iconYellow} />
@@ -90,6 +95,7 @@ export const BookingHistory = ({ data }) => {
                                     </div>
                                 )}
                             </div>
+
                             {booking.status === 'ACCEPTED' && (
                                 <div style={{
                                     marginTop: '1rem',

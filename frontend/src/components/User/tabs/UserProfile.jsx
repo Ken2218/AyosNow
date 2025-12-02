@@ -108,7 +108,7 @@ export const UserProfile = ({ data }) => {
 
     return (
         <div className={styles.profileContainer}>
-            <h2 className={styles.profileHeader}>My Profile 👤</h2>
+            <h2 className={styles.profileHeader}>My Profile</h2>
             
             {/* Profile Information Card */}
             <div className={styles.profileCard}>
