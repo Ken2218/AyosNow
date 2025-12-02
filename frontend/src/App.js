@@ -5,6 +5,7 @@ import SignupRole from './components/SignupRole';
 import WorkerDashboard from './components/Worker/WorkerDashboard'; 
 import UserDashboard from './components/User/UserDashboard';
 import './index.css';
+import { Star } from 'lucide-react';
 
 const Toast = ({ message, type, onClose }) => {
   const baseStyle = {
@@ -76,7 +77,7 @@ export default function App() {
               Fix your problems, <br />
               <span style={{ color: '#bfdbfe' }}>one click away.</span>
             </h1>
-<<<<<<< HEAD
+
             <div style={{ background: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(10px)', padding: '1rem', borderRadius: '1rem', display: 'inline-flex', alignItems: 'center', gap: '1rem' }}>
               <Star fill="currentColor" color="#1e1b4b" />
               <div>
@@ -84,8 +85,7 @@ export default function App() {
                 <div style={{ fontSize: '0.8rem', opacity: 0.8 }}>Trusted by 500 users</div>
               </div>
             </div>
-=======
->>>>>>> file-sorting
+le-sorting
           </div>
           <div style={{ zIndex: 10, opacity: 0.7 }}>&copy; 2025 AyosNow Inc.</div>
         </div>

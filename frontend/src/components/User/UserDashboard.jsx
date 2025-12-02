@@ -99,7 +99,7 @@ const UserDashboard = ({ user, setView, setUser }) => {
                             className={activeTab === 'BOOKING' ? styles.navLinkActive : styles.navLink} 
                             onClick={() => setActiveTab('BOOKING')}
                         >
-                            <Search size={20} /> Find Pro
+                            <Search size={20} /> Book Service
                         </button>
                         <button 
                             className={activeTab === 'HISTORY' ? styles.navLinkActive : styles.navLink} 

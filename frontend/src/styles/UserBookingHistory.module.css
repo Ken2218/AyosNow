@@ -122,6 +122,13 @@
     line-height: 1.5;
 }
 
+.cardDetails {
+    display: flex;
+    gap: 1.5rem;
+    flex-wrap: wrap;
+    margin-top: 0.75rem; /* Added spacing above card details */
+}
+
 .emptyState {
     text-align: center;
     padding: 4rem 2rem;
