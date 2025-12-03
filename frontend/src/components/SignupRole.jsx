@@ -2,6 +2,16 @@ import React, { useState } from 'react';
 import { User, Briefcase, CheckCircle, ArrowRight } from 'lucide-react';
 import axios from 'axios';
 
+// 1. MAP SKILLS TO DATABASE IDs
+const JOB_TYPE_MAP = {
+  'Plumbing': 1,
+  'Electrical': 2,
+  'Cleaning': 3,
+  'Landscaping': 4,
+  'Appliance Repair': 5,
+  'Painting': 6
+};
+
 export default function SignupRole({ onLoginClick, setView, setUser, showMessage }) {
   const [role, setRole] = useState('CUSTOMER');
   const [step, setStep] = useState(1);
@@ -14,22 +24,28 @@ export default function SignupRole({ onLoginClick, setView, setUser, showMessage
   const [isLoading, setIsLoading] = useState(false);
 
   const handleRegister = async () => {
+    setIsLoading(true);
+
+    // 2. CONSTRUCT PAYLOAD MATCHING BACKEND DTO
     const payload = { 
       name, 
       email, 
       password, 
       role, 
-      skill: role === 'WORKER' ? skill : null,
-      location: role === 'WORKER' ? location : null,
-      phoneNumber: role === 'CUSTOMER' ? phoneNumber : null
+      // If worker, map the string skill to the ID
+      jobTypeId: role === 'WORKER' ? JOB_TYPE_MAP[skill] : null,
+      // Map location to 'address' or 'location' depending on your DTO. 
+      // Your Controller maps 'location' -> 'address', so this is fine.
+      location: location, 
+      phoneNumber: phoneNumber
     };
-
-    setIsLoading(true);
 
     try {
       const res = await axios.post('http://localhost:8080/api/auth/register', payload);
       const user = res.data;
 
+      // Handle the unified login response
+      // Backend returns { id, name, email, role... }
       showMessage(`Account created successfully! Welcome, ${user.name}!`, 'success');
       setUser(user);
 
@@ -261,18 +277,16 @@ export default function SignupRole({ onLoginClick, setView, setUser, showMessage
                   }}
                 >
                   <option value="">Select your skill</option>
-                  <option value="Plumbing">Plumbing</option>
-                  <option value="Electrical">Electrical</option>
-                  <option value="Cleaning">Cleaning</option>
-                  <option value="Landscaping">Landscaping</option>
-                  <option value="Appliance Repair">Appliance Repair</option>
-                  <option value="Painting">Painting</option>
+                  {/* Using Object.keys to generate options based on MAP */}
+                  {Object.keys(JOB_TYPE_MAP).map(key => (
+                    <option key={key} value={key}>{key}</option>
+                  ))}
                 </select>
               </div>
 
               <div style={{ marginBottom: '1rem' }}>
                 <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', color: '#374151', marginBottom: '0.5rem' }}>
-                  Service Area
+                  Service Area / Address
                 </label>
                 <input 
                   type="text" 

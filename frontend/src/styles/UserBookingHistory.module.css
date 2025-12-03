@@ -2,6 +2,9 @@
     padding: 2rem;
     max-width: 900px;
     margin: 0 auto;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
 .profileHeader {
@@ -23,6 +26,12 @@
     border-radius: 12px;
     padding: 1.5rem;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: all 0.2s ease;
+}
+
+.bookingCard:hover {
+    border-color: #d1d5db;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
 }
 
 .cardHeader {
@@ -44,6 +53,11 @@
     color: #6b7280;
 }
 
+.providerName strong {
+    color: #374151;
+}
+
+/* Status Badges */
 .statusBadge {
     padding: 0.4rem 0.8rem;
     border-radius: 6px;
@@ -52,6 +66,7 @@
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
+    text-transform: capitalize;
 }
 
 .statusGreen {
@@ -89,10 +104,15 @@
     color: #6b7280;
 }
 
+/* Details Section */
 .cardDetails {
     display: flex;
     gap: 1.5rem;
     flex-wrap: wrap;
+    align-items: center;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid #e5e7eb;
 }
 
 .detailItem {
@@ -122,12 +142,35 @@
     line-height: 1.5;
 }
 
+/* Rate Button */
+.rateButton {
+    background-color: #4f46e5;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background-color 0.2s;
+    margin-left: auto;
+}
+
+.rateButton:hover {
+    background-color: #4338ca;
+}
+
+/* Empty State */
 .emptyState {
     text-align: center;
     padding: 4rem 2rem;
     background: #f9fafb;
     border-radius: 12px;
     margin-top: 2rem;
+    border: 2px dashed #e5e7eb;
 }
 
 .emptyIcon {

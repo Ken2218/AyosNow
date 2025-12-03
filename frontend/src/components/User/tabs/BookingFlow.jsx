@@ -2,6 +2,16 @@ import React, { useState } from 'react';
 import { Loader } from 'lucide-react';
 import styles from '../../../styles/UserBookingFlow.module.css';
 
+// 1. MAP SKILLS TO DATABASE IDs (Must match SignupRole map)
+const JOB_TYPE_MAP = {
+    'Plumbing': 1,
+    'Electrical': 2,
+    'Cleaning': 3,
+    'Landscaping': 4,
+    'Appliance Repair': 5,
+    'Painting': 6
+};
+
 export const BookingFlow = ({ handleSetTab, updateActiveBookings, userId, userData }) => {
     const [selectedCategory, setSelectedCategory] = useState(null);
     const [taskDescription, setTaskDescription] = useState('');
@@ -30,9 +40,11 @@ export const BookingFlow = ({ handleSetTab, updateActiveBookings, userId, userDa
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     customerId: userId,
-                    service: selectedCategory,
+                    // 2. SEND ID instead of String
+                    jobTypeId: JOB_TYPE_MAP[selectedCategory], 
                     description: taskDescription,
-                    scheduledTime: selectedDateTime,
+                    // 3. Ensure time format is ISO-8601 compatible (add :00 for seconds if needed)
+                    scheduledTime: selectedDateTime + ":00", 
                     location: customerAddress,
                 })
             });
@@ -43,7 +55,7 @@ export const BookingFlow = ({ handleSetTab, updateActiveBookings, userId, userDa
                 
                 const newBooking = {
                     id: savedBooking.id,
-                    service: savedBooking.service,
+                    service: savedBooking.service, // The backend response converts ID back to String Name automatically
                     provider: savedBooking.workerName || "Searching for worker...",
                     status: savedBooking.status,
                     time: new Date(savedBooking.scheduledTime).toLocaleString('en-US', {
@@ -78,7 +90,7 @@ export const BookingFlow = ({ handleSetTab, updateActiveBookings, userId, userDa
             <div className={styles.bookingStepCard}>
                 <h3>Select Service Category</h3>
                 <div className={styles.categoryGrid}>
-                    {['Plumbing', 'Electrical', 'Cleaning', 'Landscaping', 'Appliance Repair', 'Painting'].map(cat => (
+                    {Object.keys(JOB_TYPE_MAP).map(cat => (
                         <button
                             key={cat}
                             className={`${styles.categoryItem} ${selectedCategory === cat ? styles.selected : ''}`}

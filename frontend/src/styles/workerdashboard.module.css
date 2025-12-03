@@ -569,17 +569,6 @@
 }
 
 .historyInfo {
-<<<<<<< HEAD
-    flex: 1; /* Takes up all available width, pushing the button to the right */
-    display: flex;
-    flex-direction: column;
-    gap: 4px; /* Space between Title and Date */
-    min-width: 0; /* Prevents text from flowing off screen on small devices */
-}
-
-.historyTitle {
-    font-weight: 700; /* Bold via CSS, not asterisks */
-=======
     flex: 1;
     display: flex;
     flex-direction: column;
@@ -589,7 +578,6 @@
 
 .historyTitle {
     font-weight: 700;
->>>>>>> file-sorting
     font-size: 1rem;
     color: #111827;
     margin: 0;
@@ -742,18 +730,6 @@
 
 .fullHistoryItem {
     display: flex;
-<<<<<<< HEAD
-    align-items: center; /* Vertically centers everything */
-    justify-content: space-between;
-    padding: 1rem;
-    margin-bottom: 0.75rem;
-    background-color: #ffffff; /* Clean white background */
-    border: 1px solid #e5e7eb;
-    border-radius: 0.75rem;
-    border-left: 5px solid #4f46e5; /* Accent border */
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
-    gap: 1rem; /* Adds consistent space between icon, text, and button */
-=======
     align-items: center;
     justify-content: space-between;
     padding: 1rem;
@@ -764,7 +740,6 @@
     border-left: 5px solid #4f46e5;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
     gap: 1rem;
->>>>>>> file-sorting
 }
 
 .fullHistoryItem .historyInfo {
