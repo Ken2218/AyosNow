@@ -1,11 +1,11 @@
 package com.ayosnow.backend.repository;
 
-import com.ayosnow.backend.entity.User;
+import com.ayosnow.backend.entity.Worker;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import java.util.Optional;
 
 @Repository
-public interface UserRepository extends JpaRepository<User, Long> {
-    Optional<User> findByEmail(String email);
+public interface WorkerRepository extends JpaRepository<Worker, Long> {
+    Optional<Worker> findByEmail(String email);
 }

@@ -4,16 +4,20 @@ import java.time.LocalDateTime;
 
 public class BookingRequest {
     private Long customerId;
-    private String service;
+    
+    // CHANGED: We now link to a JobType ID, not a string name
+    private Long jobTypeId; 
+    
     private String description;
     private LocalDateTime scheduledTime;
     private String location;
 
+    // Getters and Setters
     public Long getCustomerId() { return customerId; }
     public void setCustomerId(Long customerId) { this.customerId = customerId; }
     
-    public String getService() { return service; }
-    public void setService(String service) { this.service = service; }
+    public Long getJobTypeId() { return jobTypeId; }
+    public void setJobTypeId(Long jobTypeId) { this.jobTypeId = jobTypeId; }
     
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }

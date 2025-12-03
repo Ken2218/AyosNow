@@ -8,13 +8,17 @@ public class BookingResponse {
     private String customerName;
     private Long workerId;
     private String workerName;
-    private String service;
+    
+    private String service; // This will hold the JobType Name (e.g. "Cleaning")
+    
     private String description;
     private LocalDateTime scheduledTime;
     private String status;
     private String location;
     private Integer rating;
+    private Double totalCost; // Added to match Entity
 
+    // Getters and Setters
     public Long getId() { return id; }
     public void setId(Long id) { this.id = id; }
     
@@ -47,4 +51,7 @@ public class BookingResponse {
     
     public Integer getRating() { return rating; }
     public void setRating(Integer rating) { this.rating = rating; }
+
+    public Double getTotalCost() { return totalCost; }
+    public void setTotalCost(Double totalCost) { this.totalCost = totalCost; }
 }
