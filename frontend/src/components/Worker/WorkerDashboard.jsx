@@ -1,136 +1,119 @@
+import React, { useState } from 'react';
+import { LogOut, Settings, User, Wrench, Home, Bell, FileText } from 'lucide-react';
+import styles from '../../styles/workerdashboard.module.css';
+import { useFetchWorkerData } from './useFetchWorkerData';
+import { WorkerHome } from './tabs/WorkerHome';
+import { JobRequests } from './tabs/JobRequests';
+import { WorkerProfile } from './tabs/WorkerProfile';
 
-import { useState, useEffect } from 'react';
 
-export const useFetchWorkerData = (initialWorkerName, workerId, skill) => {
-    const [workerData, setWorkerData] = useState({ 
-        name: initialWorkerName || 'AyosNow', 
-        activeJobs: [], 
-        jobRequests: [],
-        rating: 4.5,
-        skill: skill || 'Loading Skill...',
-        location: 'Loading Location...',
-        email: 'Loading Email...'
+const WorkerDashboard = ({ user, setView, setUser, onLogout }) => {
+    // ✅ Initialize activeTab from localStorage
+    const [activeTab, setActiveTab] = useState(() => {
+        return localStorage.getItem('workerActiveTab') || 'HOME';
     });
-    const [isLoading, setIsLoading] = useState(true);
-    const [error, setError] = useState(null);
+    
+    const { workerData, isLoading, error, setWorkerData } = useFetchWorkerData(user?.name, user?.id, user?.skill);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            console.log('==========================================');
-            console.log('WORKER DATA FETCH STARTED');
-            console.log('Worker ID:', workerId);
-            console.log('Worker Skill:', skill);
-            console.log('==========================================');
+    // ✅ Update activeTab and save to localStorage
+    const handleTabChange = (tab) => {
+        setActiveTab(tab);
+        localStorage.setItem('workerActiveTab', tab);
+    };
 
-            if (!workerId) {
-                console.log('Missing workerId');
-                setIsLoading(false);
-                return;
-            }
+    const updateActiveJobs = (newJob) => {
+        setWorkerData(prevData => ({
+            ...prevData,
+            activeJobs: [newJob, ...prevData.activeJobs],
+            jobRequests: prevData.jobRequests.filter(j => j.id !== newJob.id)
+        }));
+    };
+    
+    // ✅ Use onLogout from props and clear localStorage
+    const handleLogout = () => {
+        localStorage.removeItem('workerActiveTab');
+        if (onLogout) {
+            onLogout();
+        } else {
+            setView('LOGIN');
+            setUser(null);
+        }
+    };
+    
+    const renderContent = () => {
+        if (error) {
+            return <div className={styles.errorState}>Error: {error}</div>;
+        }
 
-            setIsLoading(true);
-            setError(null);
+        switch (activeTab) {
+            case 'HOME':
+                return <WorkerHome 
+                    data={workerData} 
+                    handleSetTab={handleTabChange} 
+                    isLoading={isLoading}
+                    updateActiveJobs={updateActiveJobs}
+                    workerId={user?.id}
+                />;
+            case 'JOBS':
+                return <JobRequests handleSetTab={handleTabChange} workerData={workerData} />;
+            case 'PROFILE':
+                return <WorkerProfile data={user} />;
+            default:
+                return <WorkerHome 
+                    data={workerData} 
+                    handleSetTab={handleTabChange} 
+                    isLoading={isLoading}
+                    updateActiveJobs={updateActiveJobs}
+                    workerId={user?.id}
+                />;
+        }
+    };
 
-            try {
-                // FETCH ALL PENDING BOOKINGS
-                const url = `http://localhost:8080/api/bookings/pending`;
-                console.log('\n📋 Fetching ALL pending bookings from:', url);
-                
-                const pendingResponse = await fetch(url);
-                let jobRequests = [];
+    return (
+        <div className={styles.dashboardContainer}>
+            <nav className={styles.navbar}>
+                <div className={styles.navContent}>
+                    <div className={styles.logoSection} onClick={() => handleTabChange('HOME')}>
+                        <div className={styles.logoIcon}><Wrench size={24} color="white" /></div> 
+                        <h1 className={styles.appName}>AyosNow</h1>
+                    </div>
+                    <div className={styles.navLinks}>
+                        <button 
+                            className={activeTab === 'HOME' ? styles.navLinkActive : styles.navLink} 
+                            onClick={() => handleTabChange('HOME')}
+                        >
+                            <Home size={20} /> Home
+                        </button>
+                        <button 
+                            className={activeTab === 'JOBS' ? styles.navLinkActive : styles.navLink} 
+                            onClick={() => handleTabChange('JOBS')}
+                        >
+                            <FileText size={20} /> My Jobs
+                        </button>
+                        <button 
+                            className={activeTab === 'PROFILE' ? styles.navLinkActive : styles.navLink} 
+                            onClick={() => handleTabChange('PROFILE')}
+                        >
+                            <User size={20} /> Profile
+                        </button>
+                    </div>
+                    <div className={styles.userActions}>
+                        <button className={styles.iconButton} aria-label="Notifications">
+                            <Bell size={20} />
+                        </button>
+                        <button onClick={handleLogout} className={styles.logoutButton}>
+                            <LogOut size={18} />
+                            <span>Logout</span>
+                        </button>
+                    </div>
+                </div>
+            </nav>
 
-                if (pendingResponse.ok) {
-                    const pendingBookings = await pendingResponse.json();
-                    console.log('✅ Pending bookings received:', pendingBookings);
-                    console.log('Total available jobs:', pendingBookings.length);
-                    
-                    jobRequests = pendingBookings.map(booking => {
-                        console.log(`📦 Job ${booking.id}:`, {
-                            service: booking.service,
-                            customer: booking.customerName,
-                            location: booking.location,
-                            time: booking.scheduledTime,
-                            price: booking.totalCost  // ✅ Log the price
-                        });
-                        
-                        return {
-                            id: booking.id,
-                            title: booking.service,
-                            category: booking.service,
-                            client: booking.customerName || 'Customer',
-                            date: booking.scheduledTime ? new Date(booking.scheduledTime).toLocaleString('en-US', {
-                                month: 'short',
-                                day: 'numeric',
-                                year: 'numeric',
-                                hour: 'numeric',
-                                minute: '2-digit'
-                            }) : 'Not specified',
-                            location: booking.location || 'Location not set',
-                            price: booking.totalCost,  // ✅ FIXED - use actual price from backend
-                            description: booking.description || '',
-                            isMatchingSkill: booking.service.toLowerCase() === skill?.toLowerCase()
-                        };
-                    });
-                    
-                    console.log('Transformed job requests:', jobRequests);
-                } else {
-                    console.error('Failed to fetch pending bookings:', pendingResponse.status);
-                }
-
-                // Get worker's accepted jobs
-                console.log('\n✅ Fetching worker accepted jobs...');
-                const acceptedResponse = await fetch(`http://localhost:8080/api/bookings/worker/${workerId}`);
-                let activeJobs = [];
-
-                if (acceptedResponse.ok) {
-                    const acceptedBookings = await acceptedResponse.json();
-                    console.log('Accepted jobs:', acceptedBookings);
-                    
-                    activeJobs = acceptedBookings.map(booking => ({
-                        id: booking.id,
-                        title: booking.service,
-                        client: booking.customerName,
-                        time: booking.scheduledTime ? new Date(booking.scheduledTime).toLocaleString('en-US', {
-                            month: 'short',
-                            day: 'numeric',
-                            year: 'numeric',
-                            hour: 'numeric',
-                            minute: '2-digit'
-                        }) : 'Not specified',
-                        status: booking.status,
-                        color: 'statusGreen',
-                        address: booking.location || 'Location not set',
-                        description: booking.description,
-                        price: booking.totalCost  // ✅ Also add price to active jobs
-                    }));
-                }
-
-                console.log('\n==========================================');
-                console.log('FINAL RESULTS:');
-                console.log('Job Requests (Available):', jobRequests.length);
-                console.log('Active Jobs (Accepted):', activeJobs.length);
-                console.log('==========================================\n');
-
-                setWorkerData({
-                    name: initialWorkerName || 'Pro Account',
-                    email: initialWorkerName ? initialWorkerName.toLowerCase().replace(/\s/g, '.') + '@ayosnow.pro' : 'pro@ayosnow.pro',
-                    location: 'Central District, City',
-                    skill: skill,
-                    rating: 4.9,
-                    activeJobs,
-                    jobRequests
-                });
-
-            } catch (err) {
-                console.error('ERROR fetching worker data:', err);
-                setError('Failed to load worker data: ' + err.message);
-            } finally {
-                setIsLoading(false);
-            }
-        };
-
-        fetchData();
-    }, [initialWorkerName, workerId, skill]);
-
-    return { workerData, isLoading, error, setWorkerData };
+            <main className={styles.mainContent}>
+                {renderContent()}
+            </main>
+        </div>
+    );
 };
+
+export default WorkerDashboard;
