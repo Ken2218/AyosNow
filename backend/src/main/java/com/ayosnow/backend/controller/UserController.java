@@ -57,7 +57,6 @@ public class UserController {
                 worker.setPhoneNumber(request.getPhoneNumber());
                 worker.setAddress(request.getLocation());
                 worker.setExperienceYears(request.getExperienceYears());
-                worker.setHourlyRate(request.getHourlyRate());
                 worker.setAvailabilityStatus("AVAILABLE");
                 worker.setRating(5.0); 
 

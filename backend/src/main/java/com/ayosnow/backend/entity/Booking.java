@@ -15,19 +15,15 @@ public class Booking {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long bookingId;
 
-    // Relationship: A Booking is made by a User
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)
     private User customer;
 
-    // Relationship: A Booking is performed by a Worker
-    // ✅ FIX: Changed nullable to TRUE. 
-    // This allows the booking to be created FIRST without a worker.
+    // Worker is optional initially (when booking is created)
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "worker_id", nullable = true)
+    @JoinColumn(name = "worker_id", nullable = true) 
     private Worker worker;
 
-    // Relationship: A Booking is for a specific Job Type
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "job_type_id", nullable = false)
     private JobType jobType;
@@ -36,15 +32,14 @@ public class Booking {
     private String description;
 
     private LocalDateTime startTime;
-    
-    private LocalDateTime endTime;
 
     @Enumerated(EnumType.STRING)
     private BookingStatus status;
 
     private String location;
 
-    private Double totalCost;
+    // ✅ CHANGED: from totalCost to price
+    private Double price; 
 
     @Column(updatable = false)
     private LocalDateTime createdAt;
@@ -84,17 +79,15 @@ public class Booking {
     public LocalDateTime getStartTime() { return startTime; }
     public void setStartTime(LocalDateTime startTime) { this.startTime = startTime; }
 
-    public LocalDateTime getEndTime() { return endTime; }
-    public void setEndTime(LocalDateTime endTime) { this.endTime = endTime; }
-
     public BookingStatus getStatus() { return status; }
     public void setStatus(BookingStatus status) { this.status = status; }
 
     public String getLocation() { return location; }
     public void setLocation(String location) { this.location = location; }
 
-    public Double getTotalCost() { return totalCost; }
-    public void setTotalCost(Double totalCost) { this.totalCost = totalCost; }
+    // ✅ UPDATED GETTERS/SETTERS
+    public Double getPrice() { return price; }
+    public void setPrice(Double price) { this.price = price; }
 
     public LocalDateTime getCreatedAt() { return createdAt; }
     public LocalDateTime getUpdatedAt() { return updatedAt; }
