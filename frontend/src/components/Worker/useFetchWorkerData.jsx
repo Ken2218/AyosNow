@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from 'react';
 
 export const useFetchWorkerData = (initialWorkerName, workerId, skill) => {
@@ -48,7 +49,8 @@ export const useFetchWorkerData = (initialWorkerName, workerId, skill) => {
                             service: booking.service,
                             customer: booking.customerName,
                             location: booking.location,
-                            time: booking.scheduledTime
+                            time: booking.scheduledTime,
+                            price: booking.totalCost  // ✅ Log the price
                         });
                         
                         return {
@@ -64,7 +66,7 @@ export const useFetchWorkerData = (initialWorkerName, workerId, skill) => {
                                 minute: '2-digit'
                             }) : 'Not specified',
                             location: booking.location || 'Location not set',
-                            price: '₱500',
+                            price: booking.totalCost,  // ✅ FIXED - use actual price from backend
                             description: booking.description || '',
                             isMatchingSkill: booking.service.toLowerCase() === skill?.toLowerCase()
                         };
@@ -98,7 +100,8 @@ export const useFetchWorkerData = (initialWorkerName, workerId, skill) => {
                         status: booking.status,
                         color: 'statusGreen',
                         address: booking.location || 'Location not set',
-                        description: booking.description
+                        description: booking.description,
+                        price: booking.totalCost  // ✅ Also add price to active jobs
                     }));
                 }
 

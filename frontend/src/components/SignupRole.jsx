@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { User, Briefcase, CheckCircle, ArrowRight } from 'lucide-react';
 import axios from 'axios';
@@ -43,7 +44,9 @@ export default function SignupRole({ onLoginClick, setView, setUser, showMessage
     try {
       const res = await axios.post('http://localhost:8080/api/auth/register', payload);
       const user = res.data;
-
+      
+      localStorage.setItem('user', JSON.stringify(user));
+      localStorage.setItem('isAuthenticated', 'true');
       // Handle the unified login response
       // Backend returns { id, name, email, role... }
       showMessage(`Account created successfully! Welcome, ${user.name}!`, 'success');

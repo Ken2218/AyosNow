@@ -368,3 +368,81 @@
 .spinning {
     animation: spin 1s linear infinite;
 }
+
+/* Pulse animation for status indicators */
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.statusIndicator {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    margin-right: 0.5rem;
+}
+
+.statusIndicator.active {
+    animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+}
+
+/* Mobile Responsive Adjustments */
+@media (max-width: 768px) {
+    .heroSection {
+        padding: 2rem 1.5rem;
+        border-radius: 16px;
+    }
+
+    .heroTitle {
+        font-size: 1.5rem;
+    }
+
+    .heroSubtitle {
+        font-size: 0.9375rem;
+    }
+
+    .sectionTitle {
+        font-size: 1.5rem;
+    }
+
+    .bookingCard {
+        padding: 1.5rem;
+        border-radius: 16px;
+    }
+
+    .serviceInfo h4 {
+        font-size: 1.125rem;
+    }
+
+    .cardHeader {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+
+    .statusBadge {
+        align-self: flex-start;
+    }
+
+    .detailsSection {
+        gap: 0.875rem;
+    }
+
+    .detailIcon {
+        width: 36px;
+        height: 36px;
+    }
+
+    .emptyState {
+        padding: 3rem 1.5rem;
+    }
+
+    .emptyIcon {
+        width: 72px;
+        height: 72px;
+    }
+}

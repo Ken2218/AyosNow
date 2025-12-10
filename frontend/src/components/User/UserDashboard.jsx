@@ -7,11 +7,20 @@ import { BookingFlow } from './tabs/BookingFlow';
 import { UserProfile } from './tabs/UserProfile';
 import { BookingHistory } from './tabs/BookingHistory';
 
-const UserDashboard = ({ user, setView, setUser }) => {
-    const [activeTab, setActiveTab] = useState('HOME');
+
+const UserDashboard = ({ user, setView, setUser, onLogout }) => {
+    // ✅ Initialize activeTab from localStorage
+    const [activeTab, setActiveTab] = useState(() => {
+        return localStorage.getItem('userActiveTab') || 'HOME';
+    });
     
-    // Pass entire user object - it contains name, email, phoneNumber from signup/login
     const { userData, isLoading, error, setUserData } = useFetchUserData(user);
+
+    // ✅ Update activeTab and save to localStorage
+    const handleTabChange = (tab) => {
+        setActiveTab(tab);
+        localStorage.setItem('userActiveTab', tab);
+    };
 
     const updateActiveBookings = (newBooking) => {
         setUserData(prevData => ({
@@ -41,9 +50,15 @@ const UserDashboard = ({ user, setView, setUser }) => {
         }
     };
     
+    // ✅ Use onLogout from props and clear localStorage
     const handleLogout = () => {
-        setView('LOGIN');
-        setUser(null);
+        localStorage.removeItem('userActiveTab');
+        if (onLogout) {
+            onLogout();
+        } else {
+            setView('LOGIN');
+            setUser(null);
+        }
     };
     
     const renderContent = () => {
@@ -55,13 +70,13 @@ const UserDashboard = ({ user, setView, setUser }) => {
             case 'HOME':
                 return <UserHome 
                     data={userData} 
-                    handleSetTab={setActiveTab} 
+                    handleSetTab={handleTabChange} 
                     isLoading={isLoading} 
                     onDeleteBooking={deleteBooking} 
                 />;
             case 'BOOKING':
                 return <BookingFlow 
-                    handleSetTab={setActiveTab} 
+                    handleSetTab={handleTabChange} 
                     updateActiveBookings={updateActiveBookings} 
                     userId={user?.id}
                     userData={userData}
@@ -73,7 +88,7 @@ const UserDashboard = ({ user, setView, setUser }) => {
             default:
                 return <UserHome 
                     data={userData} 
-                    handleSetTab={setActiveTab} 
+                    handleSetTab={handleTabChange} 
                     isLoading={isLoading} 
                     onDeleteBooking={deleteBooking} 
                 />;
@@ -84,32 +99,32 @@ const UserDashboard = ({ user, setView, setUser }) => {
         <div className={styles.dashboardContainer}>
             <nav className={styles.navbar}>
                 <div className={styles.navContent}>
-                    <div className={styles.logoSection} onClick={() => setActiveTab('HOME')}>
+                    <div className={styles.logoSection} onClick={() => handleTabChange('HOME')}>
                         <div className={styles.logoIcon}><Wrench size={24} color="white" /></div> 
                         <h1 className={styles.appName}>AyosNow</h1>
                     </div>
                     <div className={styles.navLinks}>
                         <button 
                             className={activeTab === 'HOME' ? styles.navLinkActive : styles.navLink} 
-                            onClick={() => setActiveTab('HOME')}
+                            onClick={() => handleTabChange('HOME')}
                         >
                             <Home size={20} /> Home
                         </button>
                         <button 
                             className={activeTab === 'BOOKING' ? styles.navLinkActive : styles.navLink} 
-                            onClick={() => setActiveTab('BOOKING')}
+                            onClick={() => handleTabChange('BOOKING')}
                         >
                             <Search size={20} /> Find Pro
                         </button>
                         <button 
                             className={activeTab === 'HISTORY' ? styles.navLinkActive : styles.navLink} 
-                            onClick={() => setActiveTab('HISTORY')}
+                            onClick={() => handleTabChange('HISTORY')}
                         >
                             <Calendar size={20} /> Bookings
                         </button>
                         <button 
                             className={activeTab === 'PROFILE' ? styles.navLinkActive : styles.navLink} 
-                            onClick={() => setActiveTab('PROFILE')}
+                            onClick={() => handleTabChange('PROFILE')}
                         >
                             <User size={20} /> Profile
                         </button>

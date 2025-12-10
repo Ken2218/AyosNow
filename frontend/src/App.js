@@ -2,13 +2,35 @@ import React, { useState } from 'react';
 import { Wrench, Star } from 'lucide-react';
 import Login from './components/Login';
 import SignupRole from './components/SignupRole';
-import WorkerDashboard from './components/Worker/WorkerDashboard'; // ✅ FIXED PATH
-import UserDashboard from './components/User/UserDashboard'; // ✅ FIXED PATH
+import WorkerDashboard from './components/Worker/WorkerDashboard';
+import UserDashboard from './components/User/UserDashboard';
 import './index.css';
 
+
 export default function App() {
-  const [view, setView] = useState('LOGIN'); // LOGIN | REGISTER | WORKER_DASHBOARD | USER_DASHBOARD
-  const [user, setUser] = useState(null); // store logged-in user info
+  // ✅ Initialize view from localStorage
+  const [view, setView] = useState(() => {
+    const savedUser = localStorage.getItem('user');
+    if (savedUser) {
+      const user = JSON.parse(savedUser);
+      return user.role === 'WORKER' ? 'WORKER_DASHBOARD' : 'USER_DASHBOARD';
+    }
+    return 'LOGIN';
+  });
+
+  // ✅ Initialize user from localStorage
+  const [user, setUser] = useState(() => {
+    const savedUser = localStorage.getItem('user');
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
+
+  // ✅ Logout function - clears localStorage
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    localStorage.removeItem('isAuthenticated');
+    setUser(null);
+    setView('LOGIN');
+  };
 
   // Helper function to show messages (passed to children)
   const showMessage = (msg, type) => {
@@ -74,14 +96,24 @@ export default function App() {
             />
           )}
           
-          {/* Render Worker Dashboard */}
+          {/* ✅ Render Worker Dashboard with logout */}
           {view === 'WORKER_DASHBOARD' && user && (
-            <WorkerDashboard user={user} setView={setView} setUser={setUser} />
+            <WorkerDashboard 
+              user={user} 
+              setView={setView} 
+              setUser={setUser} 
+              onLogout={handleLogout}
+            />
           )}
 
-          {/* ✅ Render User Dashboard */}
+          {/* ✅ Render User Dashboard with logout */}
           {view === 'USER_DASHBOARD' && user && (
-            <UserDashboard user={user} setView={setView} setUser={setUser} />
+            <UserDashboard 
+              user={user} 
+              setView={setView} 
+              setUser={setUser} 
+              onLogout={handleLogout}
+            />
           )}
 
         </div>
