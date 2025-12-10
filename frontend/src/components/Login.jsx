@@ -17,6 +17,9 @@ export default function Login({ onRegisterClick, setView, setUser, showMessage }
       const response = await axios.post('http://localhost:8080/api/auth/login', payload);
       const user = response.data;
 
+      localStorage.setItem('user', JSON.stringify(user));
+      localStorage.setItem('isAuthenticated', 'true');
+
       showMessage(`Welcome back, ${user.name}!`, 'success');
       setUser(user);
 

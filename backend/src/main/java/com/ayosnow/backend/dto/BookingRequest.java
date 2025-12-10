@@ -1,3 +1,4 @@
+
 package com.ayosnow.backend.dto;
 
 import java.time.LocalDateTime;
@@ -11,6 +12,7 @@ public class BookingRequest {
     private String description;
     private LocalDateTime scheduledTime;
     private String location;
+    private Double price;
 
     // Getters and Setters
     public Long getCustomerId() { return customerId; }
@@ -27,4 +29,8 @@ public class BookingRequest {
     
     public String getLocation() { return location; }
     public void setLocation(String location) { this.location = location; }
+
+
+    public Double getPrice() { return price; }
+    public void setPrice(Double price) { this.price = price; }
 }

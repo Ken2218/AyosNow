@@ -34,16 +34,20 @@ public class BookingService {
         User customer = userRepository.findById(request.getCustomerId())
                 .orElseThrow(() -> new RuntimeException("Customer not found"));
 
-        // 2. Fetch the JobType (Replacing the old String service)
+        // 2. Fetch the JobType
         JobType jobType = jobTypeRepository.findById(request.getJobTypeId())
-                 .orElseThrow(() -> new RuntimeException("JobType not found"));
+                .orElseThrow(() -> new RuntimeException("JobType not found"));
 
         Booking booking = new Booking();
         booking.setCustomer(customer);
-        booking.setJobType(jobType); // Set the relationship object
+        booking.setJobType(jobType);
         booking.setDescription(request.getDescription());
-        booking.setStartTime(request.getScheduledTime()); // Updated to match your Entity
+        booking.setStartTime(request.getScheduledTime());
         booking.setLocation(request.getLocation());
+        
+        // ✅ FIX 1: Set price using the new field name
+        booking.setPrice(request.getPrice());
+        
         booking.setStatus(BookingStatus.PENDING);
         
         // Note: Worker is null initially until accepted
@@ -73,7 +77,6 @@ public class BookingService {
                 .collect(Collectors.toList());
     }
 
-    // Updated to search by JobType name instead of a simple string column
     public List<BookingResponse> getPendingBookingsByService(String serviceName) {
         return bookingRepository.findByJobType_NameAndStatus(serviceName, BookingStatus.PENDING)
                 .stream()
@@ -86,7 +89,6 @@ public class BookingService {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new RuntimeException("Booking not found"));
 
-        // Fetch from WorkerRepository now, not UserRepository
         Worker worker = workerRepository.findById(workerId)
                 .orElseThrow(() -> new RuntimeException("Worker not found"));
 
@@ -135,7 +137,6 @@ public class BookingService {
         Booking booking = bookingRepository.findById(bookingId)
                 .orElseThrow(() -> new RuntimeException("Booking not found"));
         
-        // Usually, you only delete if it was never accepted or is cancelled
         bookingRepository.delete(booking);
     }
 
@@ -151,7 +152,6 @@ public class BookingService {
             response.setWorkerName(booking.getWorker().getName());
         }
         
-        // Convert the JobType object to a string name for the frontend
         if (booking.getJobType() != null) {
             response.setService(booking.getJobType().getName());
         }
@@ -160,7 +160,10 @@ public class BookingService {
         response.setScheduledTime(booking.getStartTime());
         response.setStatus(booking.getStatus().name());
         response.setLocation(booking.getLocation());
-        response.setTotalCost(booking.getTotalCost());
+        
+        // ✅ FIX 2: Use getPrice() and setPrice()
+        // Ensure your BookingResponse.java has setPrice(Double price)
+        response.setPrice(booking.getPrice()); 
         
         return response;
     }

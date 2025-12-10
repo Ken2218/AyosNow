@@ -1,28 +1,36 @@
 import { useState, useEffect } from 'react';
 
-export const useFetchWorkerData = (initialWorkerName, workerId, skill) => {
+export const useFetchWorkerData = (initialWorkerName, workerId, workerSkill) => {
     const [workerData, setWorkerData] = useState({ 
-        name: initialWorkerName || 'AyosNow', 
+        name: initialWorkerName || 'AyosNow Pro', 
         activeJobs: [], 
         jobRequests: [],
-        rating: 4.5,
-        skill: skill || 'Loading Skill...',
-        location: 'Loading Location...',
-        email: 'Loading Email...'
+        rating: 5.0,
+        skill: workerSkill || 'General',
+        location: 'Cebu City',
+        email: 'pro@ayosnow.com'
     });
     const [isLoading, setIsLoading] = useState(true);
     const [error, setError] = useState(null);
 
+    // Helper to safely format price
+    const formatPrice = (amount) => {
+        // Safety check for null/undefined/empty string
+        if (amount === null || amount === undefined || amount === '') return 'Price TBD';
+        
+        // Convert to number
+        const num = Number(amount);
+        
+        // Check if it's a valid finite number
+        if (isNaN(num) || !isFinite(num)) return 'Price TBD';
+        
+        // Return formatted currency (e.g., ₱1,200)
+        return `₱${num.toLocaleString()}`; 
+    };
+
     useEffect(() => {
         const fetchData = async () => {
-            console.log('==========================================');
-            console.log('WORKER DATA FETCH STARTED');
-            console.log('Worker ID:', workerId);
-            console.log('Worker Skill:', skill);
-            console.log('==========================================');
-
             if (!workerId) {
-                console.log('Missing workerId');
                 setIsLoading(false);
                 return;
             }
@@ -31,103 +39,79 @@ export const useFetchWorkerData = (initialWorkerName, workerId, skill) => {
             setError(null);
 
             try {
-                // FETCH ALL PENDING BOOKINGS
-                const url = `http://localhost:8080/api/bookings/pending`;
-                console.log('\n📋 Fetching ALL pending bookings from:', url);
-                
-                const pendingResponse = await fetch(url);
+                // 1. FETCH ALL PENDING BOOKINGS
+                const pendingResponse = await fetch(`http://localhost:8080/api/bookings/pending`);
                 let jobRequests = [];
 
                 if (pendingResponse.ok) {
                     const pendingBookings = await pendingResponse.json();
-                    console.log('✅ Pending bookings received:', pendingBookings);
-                    console.log('Total available jobs:', pendingBookings.length);
                     
-                    jobRequests = pendingBookings.map(booking => {
-                        console.log(`📦 Job ${booking.id}:`, {
-                            service: booking.service,
-                            customer: booking.customerName,
-                            location: booking.location,
-                            time: booking.scheduledTime
+                    jobRequests = pendingBookings
+                        .filter(booking => {
+                            return !workerSkill || booking.service === workerSkill;
+                        })
+                        .map(booking => {
+                            // Debug: Check what the backend is actually sending
+                            // console.log(`Job ${booking.id} Price:`, booking.price); 
+
+                            return {
+                                id: booking.id,
+                                title: booking.service,
+                                category: booking.service,
+                                client: booking.customerName || 'Valued Customer',
+                                date: booking.scheduledTime ? new Date(booking.scheduledTime).toLocaleString('en-US', {
+                                    month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit'
+                                }) : 'Flexible',
+                                location: booking.location || 'Location provided upon acceptance',
+                                
+                                // ✅ FIX: Use robust helper function
+                                price: formatPrice(booking.price),
+                                
+                                description: booking.description || 'No description provided',
+                                isMatchingSkill: true 
+                            };
                         });
-                        
-                        return {
-                            id: booking.id,
-                            title: booking.service,
-                            category: booking.service,
-                            client: booking.customerName || 'Customer',
-                            date: booking.scheduledTime ? new Date(booking.scheduledTime).toLocaleString('en-US', {
-                                month: 'short',
-                                day: 'numeric',
-                                year: 'numeric',
-                                hour: 'numeric',
-                                minute: '2-digit'
-                            }) : 'Not specified',
-                            location: booking.location || 'Location not set',
-                            price: '₱500',
-                            description: booking.description || '',
-                            isMatchingSkill: booking.service.toLowerCase() === skill?.toLowerCase()
-                        };
-                    });
-                    
-                    console.log('Transformed job requests:', jobRequests);
-                } else {
-                    console.error('Failed to fetch pending bookings:', pendingResponse.status);
                 }
 
-                // Get worker's accepted jobs
-                console.log('\n✅ Fetching worker accepted jobs...');
+                // 2. FETCH WORKER'S ACCEPTED JOBS
                 const acceptedResponse = await fetch(`http://localhost:8080/api/bookings/worker/${workerId}`);
                 let activeJobs = [];
 
                 if (acceptedResponse.ok) {
                     const acceptedBookings = await acceptedResponse.json();
-                    console.log('Accepted jobs:', acceptedBookings);
                     
                     activeJobs = acceptedBookings.map(booking => ({
                         id: booking.id,
                         title: booking.service,
                         client: booking.customerName,
                         time: booking.scheduledTime ? new Date(booking.scheduledTime).toLocaleString('en-US', {
-                            month: 'short',
-                            day: 'numeric',
-                            year: 'numeric',
-                            hour: 'numeric',
-                            minute: '2-digit'
-                        }) : 'Not specified',
-                        status: booking.status,
-                        color: 'statusGreen',
-                        address: booking.location || 'Location not set',
-                        description: booking.description
+                            month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit'
+                        }) : 'N/A',
+                        status: booking.status, 
+                        address: booking.location,
+                        description: booking.description,
+                        
+                        // ✅ FIX: Use helper function here too
+                        price: formatPrice(booking.price)
                     }));
                 }
 
-                console.log('\n==========================================');
-                console.log('FINAL RESULTS:');
-                console.log('Job Requests (Available):', jobRequests.length);
-                console.log('Active Jobs (Accepted):', activeJobs.length);
-                console.log('==========================================\n');
-
-                setWorkerData({
-                    name: initialWorkerName || 'Pro Account',
-                    email: initialWorkerName ? initialWorkerName.toLowerCase().replace(/\s/g, '.') + '@ayosnow.pro' : 'pro@ayosnow.pro',
-                    location: 'Central District, City',
-                    skill: skill,
-                    rating: 4.9,
+                setWorkerData(prev => ({
+                    ...prev,
                     activeJobs,
                     jobRequests
-                });
+                }));
 
             } catch (err) {
                 console.error('ERROR fetching worker data:', err);
-                setError('Failed to load worker data: ' + err.message);
+                setError('Failed to load dashboard data');
             } finally {
                 setIsLoading(false);
             }
         };
 
         fetchData();
-    }, [initialWorkerName, workerId, skill]);
+    }, [initialWorkerName, workerId, workerSkill]);
 
     return { workerData, isLoading, error, setWorkerData };
 };

@@ -16,7 +16,9 @@ public class BookingResponse {
     private String status;
     private String location;
     private Integer rating;
-    private Double totalCost; // Added to match Entity
+    
+    // ✅ CHANGED: Removed totalCost, kept price to match Entity
+    private Double price;
 
     // Getters and Setters
     public Long getId() { return id; }
@@ -52,6 +54,6 @@ public class BookingResponse {
     public Integer getRating() { return rating; }
     public void setRating(Integer rating) { this.rating = rating; }
 
-    public Double getTotalCost() { return totalCost; }
-    public void setTotalCost(Double totalCost) { this.totalCost = totalCost; }
+    public Double getPrice() { return price; }
+    public void setPrice(Double price) { this.price = price; }
 }

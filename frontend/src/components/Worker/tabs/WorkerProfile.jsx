@@ -23,10 +23,11 @@ export const WorkerProfile = ({ data }) => (
             </div>
             <button className={styles.editButton}>Edit Profile Details</button>
         </div>
-        <div className={styles.membershipCard}>
-            <h4>Performance Rating: <strong>{data?.rating || 4.5}</strong> Stars</h4>
-            <p className={styles.statusDetail}>High rating ensures priority matching with premium clients.</p>
-            <button className={styles.upgradeButton}>View Reviews</button>
-        </div>
+
+            <div className={styles.settingsGroup}>
+            <h4>Account Settings</h4>
+            <button className={styles.securityButton}>Change Password</button>
+            </div>
     </div>
 );
+

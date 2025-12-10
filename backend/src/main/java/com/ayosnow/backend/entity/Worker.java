@@ -26,7 +26,6 @@ public class Worker {
 
     private Integer experienceYears;
 
-    private Double hourlyRate;
 
     private String availabilityStatus; // e.g., "AVAILABLE", "BUSY"
 
@@ -68,8 +67,6 @@ public class Worker {
     public Integer getExperienceYears() { return experienceYears; }
     public void setExperienceYears(Integer experienceYears) { this.experienceYears = experienceYears; }
 
-    public Double getHourlyRate() { return hourlyRate; }
-    public void setHourlyRate(Double hourlyRate) { this.hourlyRate = hourlyRate; }
 
     public String getAvailabilityStatus() { return availabilityStatus; }
     public void setAvailabilityStatus(String availabilityStatus) { this.availabilityStatus = availabilityStatus; }
