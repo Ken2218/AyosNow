@@ -36,7 +36,7 @@ public class BookingService {
 
         // 2. Fetch the JobType (Replacing the old String service)
         JobType jobType = jobTypeRepository.findById(request.getJobTypeId())
-                 .orElseThrow(() -> new RuntimeException("JobType not found"));
+                .orElseThrow(() -> new RuntimeException("JobType not found"));
 
         Booking booking = new Booking();
         booking.setCustomer(customer);

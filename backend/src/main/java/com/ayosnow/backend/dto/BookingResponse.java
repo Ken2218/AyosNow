@@ -17,6 +17,7 @@ public class BookingResponse {
     private String location;
     private Integer rating;
     private Double totalCost; // Added to match Entity
+    private Double price;
 
     // Getters and Setters
     public Long getId() { return id; }

@@ -1,8 +1,10 @@
 package com.ayosnow.backend.service;
 
 import java.util.Optional;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import com.ayosnow.backend.entity.User;
 import com.ayosnow.backend.repository.UserRepository;
 
