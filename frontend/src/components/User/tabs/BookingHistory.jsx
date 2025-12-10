@@ -75,7 +75,7 @@ export const BookingHistory = ({ data }) => {
 
     return (
         <div className={styles.historyMainContainer}>
-            <h2 className={styles.profileHeader}>Booking History 📋</h2>
+            <h2 className={styles.profileHeader}>Booking History</h2>
             
             {sortedBookings.length > 0 ? (
                 <div className={styles.bookingsList}>
@@ -179,3 +179,4 @@ export const BookingHistory = ({ data }) => {
         </div>
     );
 };
+

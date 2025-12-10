@@ -6,7 +6,14 @@ import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.ayosnow.backend.dto.RegisterRequest;
 import com.ayosnow.backend.entity.JobType;
@@ -37,7 +44,6 @@ public class UserController {
     @PostMapping("/auth/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
         try {
-            // 1. Logic for WORKER Registration
             if ("WORKER".equalsIgnoreCase(request.getRole())) {
                 
                 if (workerRepository.findByEmail(request.getEmail()).isPresent()) {
@@ -47,10 +53,7 @@ public class UserController {
                 Worker worker = new Worker();
                 worker.setName(request.getName());
                 worker.setEmail(request.getEmail());
-                
-                // ✅ FIX: Password is now set correctly
                 worker.setPassword(request.getPassword()); 
-                
                 worker.setPhoneNumber(request.getPhoneNumber());
                 worker.setAddress(request.getLocation());
                 worker.setExperienceYears(request.getExperienceYears());
@@ -58,7 +61,6 @@ public class UserController {
                 worker.setAvailabilityStatus("AVAILABLE");
                 worker.setRating(5.0); 
 
-                // Handle JobType Relationship
                 if (request.getJobTypeId() != null) {
                     JobType jobType = jobTypeRepository.findById(request.getJobTypeId())
                             .orElseThrow(() -> new RuntimeException("JobType not found"));
@@ -69,8 +71,6 @@ public class UserController {
                 return ResponseEntity.ok(createLoginResponse(null, savedWorker));
 
             } else {
-                // 2. Logic for CUSTOMER (User) Registration
-                
                 if (userRepository.findByEmail(request.getEmail()).isPresent()) {
                     return ResponseEntity.badRequest().body("Email already registered as a User");
                 }
@@ -96,7 +96,6 @@ public class UserController {
         String email = credentials.get("email");
         String password = credentials.get("password");
 
-        // 1. Try to find a Customer first
         Optional<User> userOpt = userRepository.findByEmail(email);
         
         if (userOpt.isPresent()) {
@@ -108,17 +107,15 @@ public class UserController {
             }
         }
 
-        // 2. If not a Customer, try to find a Worker
-        // ✅ FIX: Worker login is now enabled
         Optional<Worker> workerOpt = workerRepository.findByEmail(email);
         
         if (workerOpt.isPresent()) {
-             Worker worker = workerOpt.get();
-             if (worker.getPassword() != null && worker.getPassword().equals(password)) {
-                 return ResponseEntity.ok(createLoginResponse(null, worker));
-             } else {
-                 return ResponseEntity.status(401).body("Invalid password");
-             }
+            Worker worker = workerOpt.get();
+            if (worker.getPassword() != null && worker.getPassword().equals(password)) {
+                return ResponseEntity.ok(createLoginResponse(null, worker));
+            } else {
+                return ResponseEntity.status(401).body("Invalid password");
+            }
         }
 
         return ResponseEntity.status(401).body("User not found or invalid credentials");
@@ -140,19 +137,47 @@ public class UserController {
     }
 
     @PutMapping("/users/{userId}/profile")
-    public ResponseEntity<?> updateUserProfile(@PathVariable Long userId, @RequestBody Map<String, String> updates) {
+public ResponseEntity<?> updateUserProfile(@PathVariable Long userId, @RequestBody Map<String, String> updates) {
+    try {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (updates.containsKey("name")) user.setName(updates.get("name"));
+        if (updates.containsKey("phoneNumber")) user.setPhoneNumber(updates.get("phoneNumber"));
+        if (updates.containsKey("address")) user.setAddress(updates.get("address"));
+
+        User savedUser = userRepository.save(user);
+        // Important: send updated user back in same shape as login
+        return ResponseEntity.ok(createLoginResponse(savedUser, null));
+    } catch (Exception e) {
+        return ResponseEntity.badRequest().body("Failed to update profile: " + e.getMessage());
+    }
+}
+
+    // ✅ NEW: Password Update Endpoint
+    @PutMapping("/users/{userId}/password")
+    public ResponseEntity<?> updatePassword(@PathVariable Long userId, @RequestBody Map<String, String> passwordData) {
         try {
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new RuntimeException("User not found"));
 
-            if (updates.containsKey("name")) user.setName(updates.get("name"));
-            if (updates.containsKey("phoneNumber")) user.setPhoneNumber(updates.get("phoneNumber"));
-            if (updates.containsKey("address")) user.setAddress(updates.get("address"));
-            
+            String currentPassword = passwordData.get("currentPassword");
+            String newPassword = passwordData.get("newPassword");
+
+            if (!user.getPassword().equals(currentPassword)) {
+                return ResponseEntity.status(401).body("Current password is incorrect");
+            }
+
+            if (newPassword == null || newPassword.length() < 6) {
+                return ResponseEntity.badRequest().body("New password must be at least 6 characters");
+            }
+
+            user.setPassword(newPassword);
             userRepository.save(user);
-            return ResponseEntity.ok("Profile updated successfully");
+            
+            return ResponseEntity.ok("Password updated successfully");
         } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Failed to update profile: " + e.getMessage());
+            return ResponseEntity.badRequest().body("Failed to update password: " + e.getMessage());
         }
     }
 
