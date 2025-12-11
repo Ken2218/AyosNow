@@ -90,6 +90,7 @@ const WorkerDashboard = ({ user, setView, setUser, onLogout }) => {
                         >
                             <FileText size={20} /> My Jobs
                         </button>
+                        
                         <button 
                             className={activeTab === 'PROFILE' ? styles.navLinkActive : styles.navLink} 
                             onClick={() => handleTabChange('PROFILE')}
@@ -98,9 +99,7 @@ const WorkerDashboard = ({ user, setView, setUser, onLogout }) => {
                         </button>
                     </div>
                     <div className={styles.userActions}>
-                        <button className={styles.iconButton} aria-label="Notifications">
-                            <Bell size={20} />
-                        </button>
+
                         <button onClick={handleLogout} className={styles.logoutButton}>
                             <LogOut size={18} />
                             <span>Logout</span>

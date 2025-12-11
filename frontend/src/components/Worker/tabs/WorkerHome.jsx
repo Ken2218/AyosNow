@@ -98,7 +98,7 @@ export const WorkerHome = ({ data, handleSetTab, isLoading, updateActiveJobs, wo
 
                     {/* Price Badge */}
                     <span className={styles.priceBadge}>
-                      {job.price != null 
+                      {job.price != null && !isNaN(Number(job.price))
                         ? `₱${Number(job.price).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` 
                         : 'Price TBD'}
                     </span>

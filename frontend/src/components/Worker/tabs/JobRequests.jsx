@@ -61,7 +61,7 @@ export const JobRequests = ({ handleSetTab, workerData }) => {
 
     return (
         <div className={styles.historyMainContainer}>
-            <h2 className={styles.profileHeader}>My Accepted Jobs 📋</h2>
+            <h2 className={styles.profileHeader}>My Accepted Jobs</h2>
 
             <div className={styles.bookingsList}>
                 {workerData.activeJobs.length > 0 ? (
