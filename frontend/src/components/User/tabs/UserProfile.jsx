@@ -276,7 +276,7 @@ export const UserProfile = ({ data }) => {
                 onClick={() => setShowCurrentPassword(!showCurrentPassword)}
                 className={styles.eyeButton}
               >
-                {showCurrentPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                {showCurrentPassword ? <Eye size={20} /> : <EyeOff size={20} />}
               </button>
             </div>
           </div>
@@ -296,7 +296,7 @@ export const UserProfile = ({ data }) => {
                 onClick={() => setShowNewPassword(!showNewPassword)}
                 className={styles.eyeButton}
               >
-                {showNewPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                {showNewPassword ? <Eye size={20} /> : <EyeOff size={20} />}
               </button>
             </div>
           </div>
@@ -318,7 +318,7 @@ export const UserProfile = ({ data }) => {
                 }
                 className={styles.eyeButton}
               >
-                {showConfirmPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+                {showConfirmPassword ? <Eye size={20} /> : <EyeOff size={20} />}
               </button>
             </div>
           </div>

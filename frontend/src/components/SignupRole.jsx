@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { User, Briefcase, CheckCircle, ArrowRight } from 'lucide-react';
+import { User, Briefcase, CheckCircle, ArrowRight, Eye, EyeOff } from 'lucide-react';
 import axios from 'axios';
 
 // 1. MAP SKILLS TO DATABASE IDs
@@ -18,6 +18,7 @@ export default function SignupRole({ onLoginClick, setView, setUser, showMessage
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false); // 👈 added
   const [skill, setSkill] = useState('');
   const [location, setLocation] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
@@ -28,16 +29,13 @@ export default function SignupRole({ onLoginClick, setView, setUser, showMessage
   const handleRegister = async () => {
     setIsLoading(true);
 
-    // 2. CONSTRUCT PAYLOAD MATCHING BACKEND DTO
     const payload = { 
       name, 
       email, 
       password, 
-      role, 
-      // If worker, map the string skill to the ID
+      role,
       jobTypeId: role === 'WORKER' ? JOB_TYPE_MAP[skill] : null,
-      // For workers, use 'location' field; for customers, use 'address' field
-      location: role === 'WORKER' ? location : address, 
+      location: role === 'WORKER' ? location : address,
       phoneNumber: phoneNumber,
       experienceYears: role === 'WORKER' ? experienceYears : null
     };
@@ -171,6 +169,8 @@ export default function SignupRole({ onLoginClick, setView, setUser, showMessage
 
       {step === 2 && (
         <form onSubmit={(e) => { e.preventDefault(); handleRegister(); }}>
+          
+          {/* NAME */}
           <div style={{ marginBottom: '1rem' }}>
             <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', color: '#374151', marginBottom: '0.5rem' }}>
               Full Name
@@ -192,6 +192,7 @@ export default function SignupRole({ onLoginClick, setView, setUser, showMessage
             />
           </div>
 
+          {/* EMAIL */}
           <div style={{ marginBottom: '1rem' }}>
             <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', color: '#374151', marginBottom: '0.5rem' }}>
               Email Address
@@ -213,28 +214,48 @@ export default function SignupRole({ onLoginClick, setView, setUser, showMessage
             />
           </div>
 
+          {/* PASSWORD WITH SHOW/HIDE 👇 */}
           <div style={{ marginBottom: '1rem' }}>
             <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', color: '#374151', marginBottom: '0.5rem' }}>
               Password
             </label>
-            <input 
-              type="password" 
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              required
-              minLength={6}
-              style={{
-                width: '100%',
-                padding: '0.625rem',
-                border: '1px solid #d1d5db',
-                borderRadius: '8px',
-                fontSize: '1rem',
-                outline: 'none',
-              }}
-            />
+
+            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
+              <input 
+                type={showPassword ? "text" : "password"} 
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
+                required
+                minLength={6}
+                style={{
+                  width: '100%',
+                  padding: '0.625rem',
+                  paddingRight: '2.5rem',
+                  border: '1px solid #d1d5db',
+                  borderRadius: '8px',
+                  fontSize: '1rem',
+                  outline: 'none',
+                }}
+              />
+
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                style={{
+                  position: 'absolute',
+                  right: '0.75rem',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer'
+                }}
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
+            </div>
           </div>
 
+          {/* CUSTOMER FIELDS */}
           {role === 'CUSTOMER' && (
             <>
               <div style={{ marginBottom: '1rem' }}>
@@ -281,6 +302,7 @@ export default function SignupRole({ onLoginClick, setView, setUser, showMessage
             </>
           )}
 
+          {/* WORKER FIELDS */}
           {role === 'WORKER' && (
             <>
               <div style={{ marginBottom: '1rem' }}>
@@ -374,6 +396,7 @@ export default function SignupRole({ onLoginClick, setView, setUser, showMessage
             </>
           )}
 
+          {/* SUBMIT BUTTON */}
           <button 
             type="submit" 
             disabled={isLoading}
