@@ -50,7 +50,9 @@ export const useFetchUserData = (user) => {
                             minute: '2-digit'
                         }) : 'Time Not Set',
                         description: b.description,
-                        location: b.location || 'Location not set'  // ✅ Include location
+                        location: b.location || 'Location not set',
+                        price: b.price,
+                        phone: b.workerPhone,
                     }));
                 
                 const recentHistory = bookings
@@ -65,7 +67,9 @@ export const useFetchUserData = (user) => {
                         }) : 'N/A',
                         rating: b.rating || null,
                         status: b.status,
-                        provider: b.workerName || 'Unknown'
+                        provider: b.workerName || 'Unknown',
+                        price: b.price,
+                        phone: b.workerPhone,
                     }));
 
                 setUserData(prevData => ({

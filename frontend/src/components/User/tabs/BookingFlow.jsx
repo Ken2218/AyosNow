@@ -16,8 +16,9 @@ export const BookingFlow = ({ handleSetTab, updateActiveBookings, userId, userDa
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [taskDescription, setTaskDescription] = useState('');
   const [selectedDateTime, setSelectedDateTime] = useState('');
-  const [price, setPrice] = useState('');              // NEW: price state
+  const [price, setPrice] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [notification, setNotification] = useState({ message: '', type: '' }); // type: 'success' | 'error'
 
   const getMinDateTime = () => {
     const now = new Date();
@@ -25,15 +26,20 @@ export const BookingFlow = ({ handleSetTab, updateActiveBookings, userId, userDa
     return now.toISOString().slice(0, 16);
   };
 
+  const showNotification = (message, type) => {
+    setNotification({ message, type });
+    setTimeout(() => setNotification({ message: '', type: '' }), 3000); // Auto-hide after 3 seconds
+  };
+
   const handleSubmit = async () => {
     if (!selectedCategory || taskDescription.length < 10 || !selectedDateTime || !price) {
-      alert('Please complete all fields, including price');
+      showNotification('Please complete all fields, including price', 'error');
       return;
     }
 
     const numericPrice = Number(price);
     if (Number.isNaN(numericPrice) || numericPrice <= 0) {
-      alert('Please enter a valid price greater than 0');
+      showNotification('Please enter a valid price greater than 0', 'error');
       return;
     }
 
@@ -51,7 +57,7 @@ export const BookingFlow = ({ handleSetTab, updateActiveBookings, userId, userDa
           description: taskDescription,
           scheduledTime: selectedDateTime + ':00',
           location: customerAddress,
-          price: numericPrice,                 // NEW: send price to backend
+          price: numericPrice,
         }),
       });
 
@@ -64,6 +70,7 @@ export const BookingFlow = ({ handleSetTab, updateActiveBookings, userId, userDa
           service: savedBooking.service,
           provider: savedBooking.workerName || 'Searching for worker...',
           status: savedBooking.status,
+          phone: savedBooking.workerPhone,
           time: new Date(savedBooking.scheduledTime).toLocaleString('en-US', {
             month: 'short',
             day: 'numeric',
@@ -72,19 +79,20 @@ export const BookingFlow = ({ handleSetTab, updateActiveBookings, userId, userDa
             minute: '2-digit',
           }),
           description: savedBooking.description,
-          price: savedBooking.price ?? numericPrice,   // NEW: keep price on frontend
+          price: savedBooking.price ?? numericPrice,
         };
 
         updateActiveBookings(newBooking);
-        alert('Booking created successfully!');
-        handleSetTab('HOME');
+        showNotification('Booking created successfully!', 'success');
+        // Delay switching to home tab until notification is shown
+        setTimeout(() => handleSetTab('HOME'), 3000);
       } else {
         const error = await response.text();
-        alert('Failed to create booking: ' + error);
+        showNotification('Failed to create booking: ' + error, 'error');
       }
     } catch (error) {
       console.error('Error:', error);
-      alert('Something went wrong');
+      showNotification('Something went wrong', 'error');
     } finally {
       setIsSubmitting(false);
     }
@@ -92,6 +100,13 @@ export const BookingFlow = ({ handleSetTab, updateActiveBookings, userId, userDa
 
   return (
     <div className={styles.bookingFlowContainer}>
+      {/* Styled Notification */}
+      {notification.message && (
+        <div className={`${styles.notification} ${notification.type === 'success' ? styles.success : styles.error}`}>
+          {notification.message}
+        </div>
+      )}
+
       <h2 className={styles.profileHeader}>Schedule a New Service</h2>
 
       <div className={styles.bookingStepCard}>
@@ -124,8 +139,6 @@ export const BookingFlow = ({ handleSetTab, updateActiveBookings, userId, userDa
 
       <div className={styles.bookingStepCard}>
         <h3>Date, Time & Price</h3>
-
-        {/* Date & Time + Price side by side */}
         <div style={{ display: 'grid', gridTemplateColumns: '2fr 1fr', gap: '1rem' }}>
           <input
             type="datetime-local"
@@ -134,18 +147,16 @@ export const BookingFlow = ({ handleSetTab, updateActiveBookings, userId, userDa
             onChange={(e) => setSelectedDateTime(e.target.value)}
             min={getMinDateTime()}
           />
-
           <input
             type="number"
             min="0"
             step="50"
-            className={styles.dateTimeInput} // reuse same style for consistency
+            className={styles.dateTimeInput}
             placeholder="Price"
             value={price}
             onChange={(e) => setPrice(e.target.value)}
           />
         </div>
-
         <p className={styles.helperText}>
           Set the expected date, time, and total price for this service.
         </p>
@@ -174,4 +185,3 @@ export const BookingFlow = ({ handleSetTab, updateActiveBookings, userId, userDa
     </div>
   );
 };
-

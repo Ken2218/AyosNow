@@ -1,60 +1,111 @@
-
-import React from 'react';
+import React, { useState } from 'react';
 import { ChevronRight, Briefcase, Clock, MapPin, Phone, User } from 'lucide-react';
 import styles from '../../../styles/WorkerHome.module.css';
 import { LoadingSkeleton } from '../../LoadingSkeleton';
 
+// Styled Confirmation Modal Component
+const ConfirmModal = ({ isOpen, onConfirm, onCancel, message }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className={styles.modalOverlay}>
+      <div className={styles.modalContent}>
+        <h4 className={styles.modalTitle}>Confirm Action</h4>
+        <p className={styles.modalMessage}>{message}</p>
+        <div className={styles.modalActions}>
+          <button onClick={onConfirm} className={styles.modalButtonYes}>
+            Yes
+          </button>
+          <button onClick={onCancel} className={styles.modalButtonNo}>
+            No
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export const WorkerHome = ({ data, handleSetTab, isLoading, updateActiveJobs, workerId }) => {
+  const [notification, setNotification] = useState({ message: '', type: '' });
+  const [confirmModal, setConfirmModal] = useState({ isOpen: false, message: '', onConfirm: null, onCancel: null });
   const newJobRequests = data.jobRequests || [];
 
+  const showNotification = (message, type) => {
+    setNotification({ message, type });
+    setTimeout(() => setNotification({ message: '', type: '' }), 3000);
+  };
+
+  const showConfirmModal = (message, onConfirm, onCancel) => {
+    setConfirmModal({ isOpen: true, message, onConfirm, onCancel });
+  };
+
   const handleAcceptJob = async (job) => {
-    if (!window.confirm(`Accept job: ${job.title} from ${job.client}?`)) {
-      return;
-    }
+    showConfirmModal(
+      `Accept job: ${job.title} from ${job.client}?`,
+      async () => {
+        try {
+          const response = await fetch(`http://localhost:8080/api/bookings/${job.id}/accept`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ workerId }),
+          });
 
-    try {
-      const response = await fetch(`http://localhost:8080/api/bookings/${job.id}/accept`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ workerId }),
-      });
+          if (response.ok) {
+            const updatedBooking = await response.json();
+            console.log('Job accepted:', updatedBooking);
 
-      if (response.ok) {
-        const updatedBooking = await response.json();
-        console.log('✅ Job accepted:', updatedBooking);
+            const newActiveJob = {
+              id: updatedBooking.id,
+              title: updatedBooking.service,
+              client: updatedBooking.customerName,
+              time: new Date(updatedBooking.scheduledTime).toLocaleString('en-US', {
+                month: 'short',
+                day: 'numeric',
+                year: 'numeric',
+                hour: 'numeric',
+                minute: '2-digit',
+              }),
+              status: 'ACCEPTED',
+              address: updatedBooking.location,
+              description: updatedBooking.description,
+              price: updatedBooking.price,
+              customerPhone: updatedBooking.customerPhone || null, // NEW
+            };
 
-        const newActiveJob = {
-          id: updatedBooking.id,
-          title: updatedBooking.service,
-          client: updatedBooking.customerName,
-          time: new Date(updatedBooking.scheduledTime).toLocaleString('en-US', {
-            month: 'short',
-            day: 'numeric',
-            year: 'numeric',
-            hour: 'numeric',
-            minute: '2-digit',
-          }),
-          status: 'ACCEPTED',
-          address: updatedBooking.location,
-          description: updatedBooking.description,
-          price: updatedBooking.totalCost, // ✅ Map totalCost to price
-        };
-
-        updateActiveJobs(newActiveJob);
-        alert(`✅ Job "${job.title}" accepted successfully!`);
-        window.location.reload();
-      } else {
-        const errorText = await response.text();
-        alert('❌ Failed to accept job: ' + errorText);
-      }
-    } catch (error) {
-      console.error('❌ Error:', error);
-      alert('❌ Something went wrong: ' + error.message);
-    }
+            updateActiveJobs(newActiveJob);
+            showNotification(`Job "${job.title}" accepted successfully!`, 'success');
+            window.location.reload();
+          } else {
+            const errorText = await response.text();
+            showNotification('Failed to accept job: ' + errorText, 'error');
+          }
+        } catch (error) {
+          console.error('Error:', error);
+          showNotification('Something went wrong: ' + error.message, 'error');
+        }
+        setConfirmModal({ isOpen: false, message: '', onConfirm: null, onCancel: null });
+      },
+      () => setConfirmModal({ isOpen: false, message: '', onConfirm: null, onCancel: null })
+    );
   };
 
   return (
     <>
+      {/* Styled Confirmation Modal */}
+      <ConfirmModal
+        isOpen={confirmModal.isOpen}
+        onConfirm={confirmModal.onConfirm}
+        onCancel={confirmModal.onCancel}
+        message={confirmModal.message}
+      />
+
+      {/* Styled Notification */}
+      {notification.message && (
+        <div className={`${styles.notification} ${notification.type === 'success' ? styles.success : styles.error}`}>
+          {notification.message}
+        </div>
+      )}
+
       <section className={styles.heroSection}>
         <h2 className={styles.heroTitle}>Welcome back, {data.name}!</h2>
         <p className={styles.heroSubtitle}>Ready to take on new jobs and grow your business?</p>
@@ -99,7 +150,10 @@ export const WorkerHome = ({ data, handleSetTab, isLoading, updateActiveJobs, wo
                     {/* Price Badge */}
                     <span className={styles.priceBadge}>
                       {job.price != null && !isNaN(Number(job.price))
-                        ? `₱${Number(job.price).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}` 
+                        ? `₱${Number(job.price).toLocaleString('en-US', {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}`
                         : 'Price TBD'}
                     </span>
                   </div>
@@ -127,6 +181,7 @@ export const WorkerHome = ({ data, handleSetTab, isLoading, updateActiveJobs, wo
                       </span>
                     </div>
 
+                    {/* Customer phone under location */}
                     {job.customerPhone && (
                       <div className={styles.detailRow}>
                         <div className={styles.detailIcon}>
@@ -160,4 +215,3 @@ export const WorkerHome = ({ data, handleSetTab, isLoading, updateActiveJobs, wo
     </>
   );
 };
-

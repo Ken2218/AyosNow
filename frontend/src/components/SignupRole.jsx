@@ -18,21 +18,50 @@ export default function SignupRole({ onLoginClick, setView, setUser, showMessage
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [showPassword, setShowPassword] = useState(false); // 👈 added
+  const [showPassword, setShowPassword] = useState(false);
   const [skill, setSkill] = useState('');
   const [location, setLocation] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
   const [experienceYears, setExperienceYears] = useState('');
   const [address, setAddress] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [errors, setErrors] = useState({});
+
+  const validateForm = () => {
+    const newErrors = {};
+
+    if (!name.trim()) newErrors.name = 'Full name is required.';
+    if (!email.trim()) newErrors.email = 'Email is required.';
+    else if (!/\S+@\S+\.\S+/.test(email)) newErrors.email = 'Email is invalid.';
+    if (!password) newErrors.password = 'Password is required.';
+    else if (password.length < 6) newErrors.password = 'Password must be at least 6 characters.';
+
+    if (role === 'CUSTOMER') {
+      if (!phoneNumber.trim()) newErrors.phoneNumber = 'Phone number is required.';
+      else if (!/^\d+$/.test(phoneNumber)) newErrors.phoneNumber = 'Phone number must contain only numbers.';
+      if (!address.trim()) newErrors.address = 'Address is required.';
+    } else if (role === 'WORKER') {
+      if (!skill) newErrors.skill = 'Skill is required.';
+      if (!location.trim()) newErrors.location = 'Service area is required.';
+      if (!phoneNumber.trim()) newErrors.phoneNumber = 'Phone number is required.';
+      else if (!/^\d+$/.test(phoneNumber)) newErrors.phoneNumber = 'Phone number must contain only numbers.';
+      if (!experienceYears || isNaN(experienceYears) || parseInt(experienceYears) < 0)
+        newErrors.experienceYears = 'Experience must be a valid number.';
+    }
+
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
 
   const handleRegister = async () => {
+    if (!validateForm()) return;
+
     setIsLoading(true);
 
-    const payload = { 
-      name, 
-      email, 
-      password, 
+    const payload = {
+      name,
+      email,
+      password,
       role,
       jobTypeId: role === 'WORKER' ? JOB_TYPE_MAP[skill] : null,
       location: role === 'WORKER' ? location : address,
@@ -43,7 +72,7 @@ export default function SignupRole({ onLoginClick, setView, setUser, showMessage
     try {
       const res = await axios.post('http://localhost:8080/api/auth/register', payload);
       const user = res.data;
-      
+
       localStorage.setItem('user', JSON.stringify(user));
       localStorage.setItem('isAuthenticated', 'true');
       showMessage(`Account created successfully! Welcome, ${user.name}!`, 'success');
@@ -54,7 +83,6 @@ export default function SignupRole({ onLoginClick, setView, setUser, showMessage
       } else {
         setView('USER_DASHBOARD');
       }
-
     } catch (err) {
       console.error(err);
       showMessage(err.response?.data || 'Registration failed. Please try again.', 'error');
@@ -85,7 +113,7 @@ export default function SignupRole({ onLoginClick, setView, setUser, showMessage
 
       {step === 1 && (
         <div>
-          <div 
+          <div
             style={cardStyle(role === 'CUSTOMER')}
             onClick={() => setRole('CUSTOMER')}
           >
@@ -97,15 +125,15 @@ export default function SignupRole({ onLoginClick, setView, setUser, showMessage
               </div>
             </div>
             {role === 'CUSTOMER' && (
-              <CheckCircle 
-                size={24} 
-                color="#10b981" 
+              <CheckCircle
+                size={24}
+                color="#10b981"
                 style={{ position: 'absolute', top: '1rem', right: '1rem' }}
               />
             )}
           </div>
 
-          <div 
+          <div
             style={cardStyle(role === 'WORKER')}
             onClick={() => setRole('WORKER')}
           >
@@ -117,15 +145,15 @@ export default function SignupRole({ onLoginClick, setView, setUser, showMessage
               </div>
             </div>
             {role === 'WORKER' && (
-              <CheckCircle 
-                size={24} 
-                color="#10b981" 
+              <CheckCircle
+                size={24}
+                color="#10b981"
                 style={{ position: 'absolute', top: '1rem', right: '1rem' }}
               />
             )}
           </div>
 
-          <button 
+          <button
             onClick={() => setStep(2)}
             style={{
               width: '100%',
@@ -149,8 +177,8 @@ export default function SignupRole({ onLoginClick, setView, setUser, showMessage
 
           <p style={{ textAlign: 'center', marginTop: '1.5rem', color: '#6b7280', fontSize: '0.875rem' }}>
             Already have an account?{' '}
-            <button 
-              type="button" 
+            <button
+              type="button"
               onClick={onLoginClick}
               style={{
                 background: 'none',
@@ -169,18 +197,16 @@ export default function SignupRole({ onLoginClick, setView, setUser, showMessage
 
       {step === 2 && (
         <form onSubmit={(e) => { e.preventDefault(); handleRegister(); }}>
-          
           {/* NAME */}
           <div style={{ marginBottom: '1rem' }}>
             <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', color: '#374151', marginBottom: '0.5rem' }}>
               Full Name
             </label>
-            <input 
-              type="text" 
+            <input
+              type="text"
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) => { setName(e.target.value); setErrors({...errors, name: ''}); }}
               placeholder="John Doe"
-              required
               style={{
                 width: '100%',
                 padding: '0.625rem',
@@ -190,6 +216,7 @@ export default function SignupRole({ onLoginClick, setView, setUser, showMessage
                 outline: 'none',
               }}
             />
+            {errors.name && <div style={{ color: '#ef4444', fontSize: '0.875rem', marginTop: '0.25rem' }}>{errors.name}</div>}
           </div>
 
           {/* EMAIL */}
@@ -197,12 +224,11 @@ export default function SignupRole({ onLoginClick, setView, setUser, showMessage
             <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', color: '#374151', marginBottom: '0.5rem' }}>
               Email Address
             </label>
-            <input 
-              type="email" 
+            <input
+              type="email"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e) => { setEmail(e.target.value); setErrors({...errors, email: ''}); }}
               placeholder="you@example.com"
-              required
               style={{
                 width: '100%',
                 padding: '0.625rem',
@@ -212,21 +238,20 @@ export default function SignupRole({ onLoginClick, setView, setUser, showMessage
                 outline: 'none',
               }}
             />
+            {errors.email && <div style={{ color: '#ef4444', fontSize: '0.875rem', marginTop: '0.25rem' }}>{errors.email}</div>}
           </div>
 
-          {/* PASSWORD WITH SHOW/HIDE 👇 */}
+          {/* PASSWORD WITH SHOW/HIDE */}
           <div style={{ marginBottom: '1rem' }}>
             <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', color: '#374151', marginBottom: '0.5rem' }}>
               Password
             </label>
-
             <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
-              <input 
-                type={showPassword ? "text" : "password"} 
+              <input
+                type={showPassword ? "text" : "password"}
                 value={password}
-                onChange={(e) => setPassword(e.target.value)}
+                onChange={(e) => { setPassword(e.target.value); setErrors({...errors, password: ''}); }}
                 placeholder="••••••••"
-                required
                 minLength={6}
                 style={{
                   width: '100%',
@@ -238,7 +263,6 @@ export default function SignupRole({ onLoginClick, setView, setUser, showMessage
                   outline: 'none',
                 }}
               />
-
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
@@ -253,6 +277,7 @@ export default function SignupRole({ onLoginClick, setView, setUser, showMessage
                 {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
               </button>
             </div>
+            {errors.password && <div style={{ color: '#ef4444', fontSize: '0.875rem', marginTop: '0.25rem' }}>{errors.password}</div>}
           </div>
 
           {/* CUSTOMER FIELDS */}
@@ -262,12 +287,11 @@ export default function SignupRole({ onLoginClick, setView, setUser, showMessage
                 <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', color: '#374151', marginBottom: '0.5rem' }}>
                   Phone Number
                 </label>
-                <input 
-                  type="tel" 
+                <input
+                  type="text"
                   value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
-                  placeholder="0917-123-4567"
-                  required
+                  onChange={(e) => { setPhoneNumber(e.target.value); setErrors({...errors, phoneNumber: ''}); }}
+                  placeholder="09171234567"
                   style={{
                     width: '100%',
                     padding: '0.625rem',
@@ -277,18 +301,18 @@ export default function SignupRole({ onLoginClick, setView, setUser, showMessage
                     outline: 'none',
                   }}
                 />
+                {errors.phoneNumber && <div style={{ color: '#ef4444', fontSize: '0.875rem', marginTop: '0.25rem' }}>{errors.phoneNumber}</div>}
               </div>
 
               <div style={{ marginBottom: '1rem' }}>
                 <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', color: '#374151', marginBottom: '0.5rem' }}>
                   Primary Address
                 </label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   value={address}
-                  onChange={(e) => setAddress(e.target.value)}
+                  onChange={(e) => { setAddress(e.target.value); setErrors({...errors, address: ''}); }}
                   placeholder="Enter your full address"
-                  required
                   style={{
                     width: '100%',
                     padding: '0.625rem',
@@ -298,6 +322,7 @@ export default function SignupRole({ onLoginClick, setView, setUser, showMessage
                     outline: 'none',
                   }}
                 />
+                {errors.address && <div style={{ color: '#ef4444', fontSize: '0.875rem', marginTop: '0.25rem' }}>{errors.address}</div>}
               </div>
             </>
           )}
@@ -309,10 +334,9 @@ export default function SignupRole({ onLoginClick, setView, setUser, showMessage
                 <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', color: '#374151', marginBottom: '0.5rem' }}>
                   Professional Skill
                 </label>
-                <select 
+                <select
                   value={skill}
-                  onChange={(e) => setSkill(e.target.value)}
-                  required
+                  onChange={(e) => { setSkill(e.target.value); setErrors({...errors, skill: ''}); }}
                   style={{
                     width: '100%',
                     padding: '0.625rem',
@@ -328,18 +352,18 @@ export default function SignupRole({ onLoginClick, setView, setUser, showMessage
                     <option key={key} value={key}>{key}</option>
                   ))}
                 </select>
+                {errors.skill && <div style={{ color: '#ef4444', fontSize: '0.875rem', marginTop: '0.25rem' }}>{errors.skill}</div>}
               </div>
 
               <div style={{ marginBottom: '1rem' }}>
                 <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', color: '#374151', marginBottom: '0.5rem' }}>
                   Service Area / Address
                 </label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   value={location}
-                  onChange={(e) => setLocation(e.target.value)}
+                  onChange={(e) => { setLocation(e.target.value); setErrors({...errors, location: ''}); }}
                   placeholder="City, State"
-                  required
                   style={{
                     width: '100%',
                     padding: '0.625rem',
@@ -349,18 +373,18 @@ export default function SignupRole({ onLoginClick, setView, setUser, showMessage
                     outline: 'none',
                   }}
                 />
+                {errors.location && <div style={{ color: '#ef4444', fontSize: '0.875rem', marginTop: '0.25rem' }}>{errors.location}</div>}
               </div>
 
               <div style={{ marginBottom: '1rem' }}>
                 <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', color: '#374151', marginBottom: '0.5rem' }}>
                   Phone Number
                 </label>
-                <input 
-                  type="tel" 
+                <input
+                  type="text"
                   value={phoneNumber}
-                  onChange={(e) => setPhoneNumber(e.target.value)}
-                  placeholder="0917-123-4567"
-                  required
+                  onChange={(e) => { setPhoneNumber(e.target.value); setErrors({...errors, phoneNumber: ''}); }}
+                  placeholder="09171234567"
                   style={{
                     width: '100%',
                     padding: '0.625rem',
@@ -370,19 +394,19 @@ export default function SignupRole({ onLoginClick, setView, setUser, showMessage
                     outline: 'none',
                   }}
                 />
+                {errors.phoneNumber && <div style={{ color: '#ef4444', fontSize: '0.875rem', marginTop: '0.25rem' }}>{errors.phoneNumber}</div>}
               </div>
 
               <div style={{ marginBottom: '1rem' }}>
                 <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', color: '#374151', marginBottom: '0.5rem' }}>
                   Years of Experience
                 </label>
-                <input 
-                  type="number" 
+                <input
+                  type="number"
                   min="0"
                   value={experienceYears}
-                  onChange={(e) => setExperienceYears(e.target.value)}
+                  onChange={(e) => { setExperienceYears(e.target.value); setErrors({...errors, experienceYears: ''}); }}
                   placeholder="e.g. 3"
-                  required
                   style={{
                     width: '100%',
                     padding: '0.625rem',
@@ -392,13 +416,14 @@ export default function SignupRole({ onLoginClick, setView, setUser, showMessage
                     outline: 'none',
                   }}
                 />
+                {errors.experienceYears && <div style={{ color: '#ef4444', fontSize: '0.875rem', marginTop: '0.25rem' }}>{errors.experienceYears}</div>}
               </div>
             </>
           )}
 
           {/* SUBMIT BUTTON */}
-          <button 
-            type="submit" 
+          <button
+            type="submit"
             disabled={isLoading}
             style={{
               width: '100%',
@@ -423,8 +448,8 @@ export default function SignupRole({ onLoginClick, setView, setUser, showMessage
           </button>
 
           <p style={{ textAlign: 'center', marginTop: '1.5rem', color: '#6b7280', fontSize: '0.875rem' }}>
-            <button 
-              type="button" 
+            <button
+              type="button"
               onClick={() => setStep(1)}
               style={{
                 background: 'none',

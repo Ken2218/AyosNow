@@ -35,3 +35,54 @@ code {
     transform: rotate(360deg);
   }
 }
+
+.app-toast {
+  position: fixed;
+  top: 1.5rem;                 /* above the cards */
+  left: 50%;                   /* center horizontally */
+  transform: translateX(-50%);
+  z-index: 9999;
+  padding: 0.9rem 1.2rem;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  max-width: 420px;
+  width: max-content;
+  animation: appToastIn 0.2s ease-out,
+             appToastOut 0.2s ease-out 2.8s forwards;
+}
+
+.app-toast-success {
+  background: #d1fae5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+
+.app-toast-error {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fecaca;
+}
+
+@keyframes appToastIn {
+  from {
+    opacity: 0;
+    transform: translate(-50%, -8px);
+  }
+  to {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+}
+
+@keyframes appToastOut {
+  from {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+  to {
+    opacity: 0;
+    transform: translate(-50%, -8px);
+  }
+}
