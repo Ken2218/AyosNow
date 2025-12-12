@@ -9,9 +9,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.ayosnow.backend.dto.BookingRequest;
 import com.ayosnow.backend.dto.BookingResponse;
-import com.ayosnow.backend.entity.*;
+import com.ayosnow.backend.entity.Booking;
 import com.ayosnow.backend.entity.Booking.BookingStatus;
-import com.ayosnow.backend.repository.*;
+import com.ayosnow.backend.entity.JobType;
+import com.ayosnow.backend.entity.User;
+import com.ayosnow.backend.entity.Worker;
+import com.ayosnow.backend.repository.BookingRepository;
+import com.ayosnow.backend.repository.JobTypeRepository;
+import com.ayosnow.backend.repository.UserRepository;
+import com.ayosnow.backend.repository.WorkerRepository;
 
 @Service
 public class BookingService {
@@ -45,7 +51,7 @@ public class BookingService {
         booking.setStartTime(request.getScheduledTime());
         booking.setLocation(request.getLocation());
         
-        // ✅ FIX 1: Set price using the new field name
+        // FIX 1: Set price using the new field name
         booking.setPrice(request.getPrice());
         
         booking.setStatus(BookingStatus.PENDING);
@@ -150,6 +156,7 @@ public class BookingService {
         if (booking.getWorker() != null) {
             response.setWorkerId(booking.getWorker().getWorkerId());
             response.setWorkerName(booking.getWorker().getName());
+            response.setWorkerPhone(booking.getWorker().getPhoneNumber());
         }
         
         if (booking.getJobType() != null) {

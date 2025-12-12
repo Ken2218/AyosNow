@@ -1,0 +1,1458 @@
+    /* --- CORE LAYOUT & CONTAINERS --- */
+
+    /* Main container for the whole dashboard */
+    .dashboardContainer {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        background-color: #f3f4f6; /* Very light gray background for the page */
+        font-family: 'Inter', sans-serif;
+    }
+
+    /* Main content area (beside the sidebar/below the navbar) */
+    .mainContent {
+        flex-grow: 1;
+        max-width: 1200px;
+        width: 100%;
+        margin: 0 auto;
+        padding: 2rem;
+    }
+
+    /* Container for loading state */
+    .loadingContainer, .errorState {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        padding: 4rem 2rem;
+        background-color: white;
+        border-radius: 1rem;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .spinner {
+        animation: spin 1s linear infinite;
+        color: #4f46e5; /* Indigo */
+    }
+
+    .spinnerWhite {
+        animation: spin 1s linear infinite;
+        color: white;
+    }
+
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
+
+    .loadingText, .errorState {
+        margin-top: 1rem;
+        font-size: 1.1rem;
+        color: #6b7280;
+    }
+
+    /* --- NAVBAR STYLES --- */
+
+    .navbar {
+        background-color: #4f46e5; /* Primary: Indigo */
+        color: white;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        padding: 1rem 2rem;
+    }
+
+    .navContent {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        max-width: 1200px;
+        margin: 0 auto;
+    }
+
+    .logoSection {
+        display: flex;
+        align-items: center;
+        cursor: pointer;
+    }
+
+    .logoIcon {
+        margin-right: 0.5rem;
+        /* Wrench icon color is set to white in the component */
+    }
+
+    .appName {
+        font-size: 1.5rem;
+        font-weight: 800;
+    }
+
+    .navLinks {
+        display: flex;
+        gap: 1.5rem;
+    }
+
+    .navLink, .navLinkActive {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: none;
+        border: none;
+        color: white;
+        font-size: 1rem;
+        font-weight: 500;
+        cursor: pointer;
+        padding: 0.5rem;
+        transition: all 0.2s;
+        border-bottom: 2px solid transparent;
+    }
+
+    .navLink:hover {
+        color: #e5e7eb; /* Light gray on hover */
+    }
+
+    .navLinkActive {
+        font-weight: 700;
+        border-bottom: 2px solid #fcd34d; /* Accent: Amber */
+    }
+
+    .userActions {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .iconButton {
+        background: none;
+        border: none;
+        color: white;
+        cursor: pointer;
+        padding: 0.5rem;
+        border-radius: 50%;
+        transition: background-color 0.2s;
+    }
+
+    .iconButton:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+
+    .logoutButton {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+        background-color: #ef4444; /* Red */
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    .logoutButton:hover {
+        background-color: #dc2626; /* Darker red */
+    }
+
+    /* Mobile Navbar adjustments */
+    @media (max-width: 1024px) {
+        .navLinks {
+            display: none; /* Hide main links on smaller screens for simplicity */
+        }
+        .navContent {
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1rem;
+        }
+        .logoSection {
+            flex-basis: 100%;
+            justify-content: center;
+        }
+    }
+
+    /* --- HOME TAB COMPONENTS --- */
+
+    .heroSection {
+        background-color: white;
+        padding: 2rem;
+        border-radius: 1rem;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        margin-bottom: 2rem;
+    }
+
+    .heroTitle {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 1.5rem;
+    }
+
+    .searchWrapper {
+        display: flex;
+        align-items: center;
+        background-color: #e5e7eb;
+        border-radius: 0.75rem;
+        padding: 0.25rem;
+        border: 1px solid #d1d5db;
+    }
+
+    .searchIcon {
+        color: #6b7280;
+        margin: 0 0.75rem;
+    }
+
+    .searchInput {
+        flex-grow: 1;
+        padding: 0.75rem 0;
+        border: none;
+        background: transparent;
+        font-size: 1rem;
+        outline: none;
+    }
+
+    .searchButton {
+        background-color: #fcd34d; /* Accent: Amber */
+        color: #1f2937;
+        padding: 0.75rem 1.5rem;
+        border: none;
+        border-radius: 0.5rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        white-space: nowrap;
+    }
+
+    .searchButton:hover {
+        background-color: #fbbf24;
+    }
+
+    /* Grid for Home Tab */
+    .gridContainer {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 2rem;
+    }
+
+    @media (max-width: 768px) {
+        .gridContainer {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .leftColumn, .rightColumn {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .sectionHeader {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+
+    .sectionHeader h3 {
+        font-size: 1.25rem;
+        color: #1f2937;
+    }
+
+    .viewAllLink {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        background: none;
+        border: none;
+        color: #4f46e5;
+        font-weight: 600;
+        cursor: pointer;
+        font-size: 0.9rem;
+    }
+
+    /* Bookings/Jobs List - UPDATED */
+    .bookingsList {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .bookingCard {
+        background-color: white;
+        padding: 1.5rem;
+        border-radius: 0.75rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+        border: 1px solid #e5e7eb;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .bookingCard:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .cardTop {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+    }
+
+    .cardHeader {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+    }
+
+    .serviceTitle {
+        font-size: 1.1rem;
+        font-weight: 700;
+        color: #1f2937;
+        margin-bottom: 0.25rem;
+    }
+
+    .providerName {
+        font-size: 0.9rem;
+        color: #6b7280;
+        margin-top: 0.25rem;
+    }
+
+    .statusBadge {
+        padding: 0.4rem 0.8rem;
+        border-radius: 6px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: white;
+        white-space: nowrap;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    /* Status Colors */
+    .statusYellow { background-color: #fcd34d; color: #1f2937; }
+    .statusGreen { background-color: #10b981; }
+    .statusIndigo { background-color: #4f46e5; }
+    .statusBlue { background-color: #3b82f6; }
+    .statusPurple { background-color: #8b5cf6; }
+    .statusRed { background-color: #ef4444; }
+    .statusGray { background-color: #6b7280; }
+
+    .divider {
+        height: 1px;
+        background-color: #e5e7eb;
+        margin: 1rem 0;
+    }
+
+    .cardBottom {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+    }
+
+    .cardDetails {
+        display: flex;
+        gap: 1.5rem;
+        flex-wrap: wrap;
+        margin-bottom: 1rem;
+    }
+
+    .infoItem, .detailItem {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-size: 0.9rem;
+        color: #6b7280;
+    }
+
+    .iconGray {
+        color: #9ca3af;
+    }
+
+    .iconYellow {
+        color: #fbbf24;
+        fill: #fbbf24;
+    }
+
+    .detailsBtn {
+        background: none;
+        border: 1px solid #4f46e5;
+        color: #4f46e5;
+        padding: 0.5rem 1rem;
+        border-radius: 0.5rem;
+        font-size: 0.85rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+    }
+
+    .detailsBtn:hover {
+        background-color: #4f46e5;
+        color: white;
+    }
+
+    .deleteBtn {
+        background: #fee2e2;
+        color: #dc2626;
+        border: none;
+        padding: 0.5rem;
+        border-radius: 6px;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.2s ease;
+        margin-left: auto;
+    }
+
+    .deleteBtn:hover {
+        background: #fecaca;
+        transform: scale(1.05);
+    }
+
+    .deleteBtn:active {
+        transform: scale(0.95);
+    }
+
+    .acceptButton {
+        width: 100%;
+        padding: 0.75rem;
+        background: #10b981;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background 0.2s ease;
+        margin-top: 0.5rem;
+    }
+
+    .acceptButton:hover {
+        background: #059669;
+    }
+
+    .bookingDescription {
+        margin-top: 1rem;
+        padding: 0.75rem;
+        background: #f9fafb;
+        border-radius: 6px;
+        font-size: 0.9rem;
+        color: #6b7280;
+        line-height: 1.5;
+    }
+
+    .emptyState {
+        background-color: #f9fafb;
+        padding: 2rem;
+        border-radius: 0.75rem;
+        text-align: center;
+        color: #6b7280;
+    }
+
+    .emptyIcon {
+        color: #9ca3af;
+        margin-bottom: 1rem;
+    }
+
+    .emptyHint {
+        font-size: 0.9rem;
+        color: #9ca3af;
+        margin-top: 0.5rem;
+    }
+
+    /* Stats Card (Right Column) */
+    .statsCard {
+        background-color: white;
+        padding: 1.5rem;
+        border-radius: 1rem;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+        text-align: center;
+    }
+
+    .avatarCircle {
+        width: 80px;
+        height: 80px;
+        background-color: #4f46e5;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: white;
+        margin: 0 auto 1rem auto;
+    }
+
+    .profileName {
+        font-size: 1.4rem;
+        font-weight: 700;
+        color: #1f2937;
+    }
+
+    .memberStatus {
+        font-size: 0.9rem;
+        color: #6b7280;
+        margin-bottom: 1.5rem;
+    }
+
+    .statsGrid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+
+    .statItem {
+        background-color: #f9fafb;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        border: 1px solid #e5e7eb;
+        text-align: left;
+    }
+
+    .statTop {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #4f46e5;
+    }
+
+    .statValue {
+        font-size: 1.25rem;
+        font-weight: 800;
+        color: #1f2937;
+    }
+
+    .statLabel {
+        font-size: 0.75rem;
+        color: #6b7280;
+        margin-top: 0.25rem;
+    }
+
+    /* History/Performance Card */
+    .historyCard {
+        background-color: white;
+        padding: 1.5rem;
+        border-radius: 1rem;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .cardHeaderSimple {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+        border-bottom: 1px solid #e5e7eb;
+        padding-bottom: 0.5rem;
+    }
+
+    .link {
+        background: none;
+        border: none;
+        color: #4f46e5;
+        font-weight: 600;
+        cursor: pointer;
+        font-size: 0.9rem;
+    }
+
+    .historyList {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .historyItem {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #f3f4f6;
+    }
+
+    .historyIcon {
+        color: #4f46e5;
+        margin-right: 0.75rem;
+    }
+
+    .historyInfo {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        min-width: 0;
+    }
+
+    .historyTitle {
+        font-weight: 700;
+        font-size: 1rem;
+        color: #111827;
+        margin: 0;
+    }
+
+    .historyDate {
+        font-size: 0.85rem;
+        color: #6b7280;
+        margin: 0;
+    }
+
+    .ratingWrapper {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        font-weight: 700;
+        color: #eab308;
+        font-size: 0.95rem;
+    }
+
+    .primaryCta {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.75rem;
+        background-color: #10b981;
+        color: white;
+        border: none;
+        padding: 1rem 1.5rem;
+        border-radius: 0.75rem;
+        font-weight: 700;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    .primaryCta:hover {
+        background-color: #059669;
+    }
+
+    .fullWidthCta {
+        width: 100%;
+    }
+
+    /* --- PROFILE/SETTINGS/HISTORY TABS --- */
+    .profileContainer, .settingsContainer, .historyMainContainer, .bookingFlowContainer {
+        background-color: white;
+        padding: 2.5rem;
+        border-radius: 1rem;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.05);
+    }
+
+    .profileHeader {
+        font-size: 2rem;
+        font-weight: 700;
+        color: #4f46e5;
+        margin-bottom: 2rem;
+        border-bottom: 2px solid #e5e7eb;
+        padding-bottom: 0.5rem;
+    }
+
+    .profileCard, .membershipCard, .bookingStepCard {
+        background-color: #f9fafb;
+        padding: 1.5rem;
+        border-radius: 0.75rem;
+        margin-bottom: 1.5rem;
+        border: 1px solid #e5e7eb;
+    }
+
+    .profileDetail {
+        margin-bottom: 1rem;
+    }
+
+    .profileDetail label {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #6b7280;
+        display: block;
+        margin-bottom: 0.25rem;
+    }
+
+    .profileDetail p {
+        font-size: 1rem;
+        font-weight: 500;
+        color: #1f2937;
+    }
+
+    .editButton, .upgradeButton, .securityButton {
+        background-color: #4f46e5;
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        margin-top: 0.5rem;
+    }
+
+    .editButton:hover, .upgradeButton:hover, .securityButton:hover {
+        background-color: #4338ca;
+    }
+
+    .membershipCard h4 {
+        color: #eab308;
+        font-size: 1.1rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .statusDetail {
+        font-size: 0.9rem;
+        color: #6b7280;
+        margin-bottom: 1rem;
+    }
+
+    /* Settings */
+    .settingsGroup {
+        background-color: white;
+        padding: 1.5rem;
+        border-radius: 0.75rem;
+        margin-bottom: 1.5rem;
+        border: 1px solid #d1d5db;
+    }
+
+    .settingsGroup h4 {
+        color: #1f2937;
+        margin-bottom: 1rem;
+        padding-bottom: 0.5rem;
+        border-bottom: 1px solid #e5e7eb;
+    }
+
+    .settingItem {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #f3f4f6;
+    }
+
+    .settingItem p {
+        font-size: 1rem;
+    }
+
+    /* History */
+    .fullHistoryList {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+
+    .fullHistoryItem {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 1rem;
+        margin-bottom: 0.75rem;
+        background-color: #ffffff;
+        border: 1px solid #e5e7eb;
+        border-radius: 0.75rem;
+        border-left: 5px solid #4f46e5;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        gap: 1rem;
+    }
+
+    .fullHistoryItem .historyInfo {
+        margin-left: 0.75rem;
+        flex-grow: 1;
+    }
+    .actionGroup {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-shrink: 0; /* Prevents this section from shrinking */
+    }
+    .statusBadge {
+        background-color: #eff6ff;
+        color: #2563eb;
+        padding: 6px 12px;
+        border-radius: 20px;
+        font-weight: 600;
+        font-size: 0.9rem;
+        white-space: nowrap;
+    }   
+    .proceedButton {
+        background-color: #2563eb;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-weight: 500;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        white-space: nowrap; /* Keeps button text on one line */
+    }
+
+    .proceedButton:hover {
+        background-color: #1d4ed8;
+    }
+
+    .actionGroup {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-shrink: 0;
+    }
+
+    .categorySpan {
+        font-weight: 400;
+        color: #6b7280;
+        font-size: 0.9rem;
+        margin-left: 5px;
+    }
+
+    .proceedButton {
+        background-color: #2563eb;
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 8px;
+        font-weight: 500;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        white-space: nowrap;
+    }
+
+    .proceedButton:hover {
+        background-color: #1d4ed8;
+    }
+
+    .proceedButton:disabled {
+        background-color: #9ca3af;
+        cursor: not-allowed;
+    }
+
+    /* Booking Flow */
+    .categoryGrid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+        margin-top: 1rem;
+    }
+    .categorySpan {
+        font-weight: 400;
+        color: #6b7280;
+        font-size: 0.9rem;
+        margin-left: 5px;
+    }
+
+    .categoryItem {
+        background-color: #e5e7eb;
+        color: #1f2937;
+        padding: 1rem;
+        border: 2px solid transparent;
+        border-radius: 0.5rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s;
+        text-align: center;
+    }
+
+    .categoryItem:hover {
+        background-color: #d1d5db;
+    }
+
+    .categoryItem.selected {
+        background-color: #4f46e5;
+        color: white;
+        border-color: #fcd34d;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .taskInput {
+        width: 100%;
+        padding: 1rem;
+        border: 1px solid #d1d5db;
+        border-radius: 0.5rem;
+        margin-top: 0.5rem;
+        resize: vertical;
+        font-size: 1rem;
+    }
+
+    .dateTimeInput {
+        width: 100%;
+        padding: 1rem;
+        border: 1px solid #d1d5db;
+        border-radius: 0.5rem;
+        margin-top: 0.5rem;
+        font-size: 1rem;
+    }
+
+    .jobsList {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .completeButton:hover {
+    background-color: #059669 !important;
+    }
+
+    .cancelButton:hover {
+    background-color: #dc2626 !important;
+    }
+
+    .statusRed {
+    background-color: #fee2e2;
+    color: #991b1b;
+    }
+
+
+    /* --- Modal Styles --- */
+    .modalOverlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(15, 23, 42, 0.7);
+        backdrop-filter: blur(4px);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1000;
+        animation: fadeIn 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    .modalContent {
+        background: white;
+        border-radius: 20px;
+        width: 90%;
+        max-width: 520px;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes slideUp {
+        from {
+            transform: translateY(32px) scale(0.96);
+            opacity: 0;
+        }
+        to {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+        }
+    }
+
+    .modalHeader {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 2rem;
+        border-bottom: 2px solid #f1f5f9;
+    }
+
+    .modalHeader h3 {
+        margin: 0;
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: #1e293b;
+        letter-spacing: -0.02em;
+    }
+
+    .modalCloseButton {
+        background: #f8fafc;
+        border: none;
+        cursor: pointer;
+        color: #64748b;
+        padding: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+    }
+
+    .modalCloseButton:hover {
+        background-color: #f1f5f9;
+        color: #1e293b;
+        transform: rotate(90deg);
+    }
+
+    .modalBody {
+        padding: 2rem;
+    }
+
+    .passwordForm {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+    }
+
+    .formGroup {
+        display: flex;
+        flex-direction: column;
+        gap: 0.625rem;
+    }
+
+    .formGroup label {
+        font-size: 0.9375rem;
+        font-weight: 700;
+        color: #334155;
+    }
+
+    .passwordInputWrapper {
+        position: relative;
+        display: flex;
+        align-items: center;
+    }
+
+    .passwordInput {
+        width: 100%;
+        padding: 0.875rem;
+        padding-right: 3.5rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        font-size: 1.0625rem;
+        transition: all 0.3s ease;
+        font-family: inherit;
+    }
+
+    .passwordInput:focus {
+        outline: none;
+        border-color: #6366f1;
+        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+    }
+
+    .eyeButton {
+        position: absolute;
+        right: 1rem;
+        background: #f8fafc;
+        border: none;
+        cursor: pointer;
+        color: #64748b;
+        padding: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: all 0.3s ease;
+        border-radius: 8px;
+    }
+
+    .eyeButton:hover {
+        background: #f1f5f9;
+        color: #1e293b;
+    }
+
+    .inputField {
+        width: 100%;
+        padding: 0.875rem;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        font-size: 1.0625rem;
+        transition: all 0.3s ease;
+        font-family: inherit;
+    }
+
+    .inputField:focus {
+        outline: none;
+        border-color: #6366f1;
+        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+    }
+
+    .modalActions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+    }
+
+    .updateButton {
+        flex: 1;
+        padding: 0.875rem 1.25rem;
+        background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 1.0625rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+    }
+
+    .updateButton:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 16px rgba(16, 185, 129, 0.35);
+    }
+
+    .updateButton:disabled {
+        background: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%);
+        cursor: not-allowed;
+        box-shadow: none;
+        transform: none;
+    }
+
+    .cancelButton {
+        flex: 1;
+        padding: 0.875rem 1.25rem;
+        background: #f8fafc;
+        color: #64748b;
+        border: 2px solid #e2e8f0;
+        border-radius: 12px;
+        font-weight: 700;
+        font-size: 1.0625rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .cancelButton:hover {
+        background: #f1f5f9;
+        color: #334155;
+        border-color: #cbd5e1;
+    }
+
+    .cancelButton:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    /* Profile Container Styles */
+    .profileContainer {
+        max-width: 900px;
+        margin: 0 auto;
+        padding-top: 1rem;
+    }
+
+    .profileHeader {
+        font-size: 2rem;
+        font-weight: 800;
+        color: #111827;
+        margin-bottom: 0.5rem;
+    }
+
+    .profileCard {
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 1rem;
+        padding: 2rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+
+    .profileDetail {
+        margin-bottom: 1.5rem;
+        border-bottom: 1px solid #f3f4f6;
+        padding-bottom: 1rem;
+    }
+
+    .profileDetail:last-of-type {
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+
+    .profileDetail label {
+        display: block;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: #6b7280;
+        margin-bottom: 0.25rem;
+        text-transform: uppercase;
+    }
+
+    .profileDetail p {
+        font-size: 1rem;
+        color: #111827;
+        margin: 0;
+        font-weight: 500;
+    }
+
+    .editButton {
+        background-color: #fcd34d;
+        color: #111827;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+
+    .editButton:hover {
+        background-color: #fbbf24;
+    }
+
+    .editButton:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .settingsGroup {
+        background: white;
+        border: 1px solid #e5e7eb;
+        border-radius: 1rem;
+        padding: 2rem;
+        margin-bottom: 1.5rem;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    }
+
+    .settingsGroup h4 {
+        font-size: 1.125rem;
+        font-weight: 600;
+        color: #1f2937;
+        margin-bottom: 1rem;
+    }
+
+    .securityButton {
+        background-color: #ef4444;
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 0.5rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    .securityButton:hover {
+        background-color: #dc2626;
+    }
+
+    .modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+    }
+
+    .modalContent {
+    background: white;
+    padding: 1.75rem;
+    border-radius: 16px;
+    box-shadow: 0 12px 36px rgba(0, 0, 0, 0.2);
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+    }
+
+    .modalTitle {
+    margin: 0 0 0.5rem 0;
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1e293b;
+    }
+
+    .modalMessage {
+    margin: 0 0 1.25rem 0;
+    font-size: 1rem;
+    color: #64748b;
+    }
+
+    .modalActions {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 1rem;
+    }
+
+    .modalButtonYes {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    background: #10b981;
+    color: white;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    }
+
+    .modalButtonYes:hover {
+    background: #059669;
+    }
+
+    .modalButtonNo {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    background: #ef4444;
+    color: white;
+    cursor: pointer;
+    transition: background 0.3s ease;
+    }
+
+    .modalButtonNo:hover {
+    background: #dc2626;
+    }
+
+    .notification {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 1rem;
+    border-radius: 8px;
+    font-size: 0.9375rem;
+    font-weight: 600;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    animation: fadeInUp 0.3s ease-out, fadeOut 0.3s ease-out 2.7s forwards;
+    }
+
+    .notification.success {
+    background: #d1fae5;
+    color: #065f46;
+    border: 1px solid #a7f3d0;
+    }
+
+    .notification.error {
+    background: #fee2e2;
+    color: #991b1b;
+    border: 1px solid #fca5a5;
+    }
+
+    @keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    }
+
+    @keyframes fadeOut {
+    from {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    to {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    }
+
+    /* Card-level status pill */
+.statusPill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+/* Small dot inside pill */
+.statusDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background-color: currentColor;
+}
+
+/* Different status colors */
+.statusPillAccepted {
+  background: #e0f2fe;
+  color: #0369a1;
+}
+
+.statusPillCompleted {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.statusPillCancelled {
+  background: #fee2e2;
+  color: #b91c1c;
+}
+
+.statusPillPending {
+  background: #fef9c3;
+  color: #92400e;
+}
+
+/* Nicer description */
+.jobDescription {
+  color: #6b7280;
+  font-size: 0.875rem;
+  margin-top: 0.5rem;
+  font-style: italic;
+  padding: 0.75rem 0.9rem;
+  background-color: #f9fafb;
+  border-left: 3px solid #e5e7eb;
+  border-radius: 6px;
+}
+
+/* Actions row */
+.actionsRow {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
+}
+
+/* Base action button */
+.actionButton {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.45rem;
+  padding: 0.7rem 1rem;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.9rem;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.12);
+}
+
+/* Complete: green gradient */
+.completeAction {
+  background: linear-gradient(135deg, #22c55e, #16a34a);
+  color: white;
+}
+
+.completeAction:hover {
+  background: linear-gradient(135deg, #16a34a, #15803d);
+  transform: translateY(-1px);
+}
+
+/* Cancel: red gradient */
+.cancelAction {
+  background: linear-gradient(135deg, #f97373, #ef4444);
+  color: white;
+}
+
+.cancelAction:hover {
+  background: linear-gradient(135deg, #ef4444, #b91c1c);
+  transform: translateY(-1px);
+}
+
+/* Disabled state */
+.actionButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Info banners */
+.infoBannerSuccess,
+.infoBannerDanger {
+  margin-top: 0.9rem;
+  padding: 0.7rem 0.9rem;
+  border-radius: 10px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-align: center;
+}
+
+.infoBannerSuccess {
+  background-color: #ecfdf3;
+  color: #166534;
+  border: 1px solid #bbf7d0;
+}
+
+.infoBannerDanger {
+  background-color: #fef2f2;
+  color: #b91c1c;
+  border: 1px solid #fecaca;
+}

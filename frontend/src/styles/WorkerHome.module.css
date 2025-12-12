@@ -267,3 +267,123 @@
     font-size: 0.938rem;
     color: #6b7280;
 }
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+
+.modalContent {
+  background: white;
+  padding: 1.75rem;
+  border-radius: 16px;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.2);
+  max-width: 400px;
+  width: 100%;
+  text-align: center;
+}
+
+.modalTitle {
+  margin: 0 0 0.5rem 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #1e293b;
+}
+
+.modalMessage {
+  margin: 0 0 1.25rem 0;
+  font-size: 1rem;
+  color: #64748b;
+}
+
+.modalActions {
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  margin-top: 1rem;
+}
+
+.modalButtonYes {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  background: #10b981;
+  color: white;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.modalButtonYes:hover {
+  background: #059669;
+}
+
+.modalButtonNo {
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  background: #ef4444;
+  color: white;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.modalButtonNo:hover {
+  background: #dc2626;
+}
+
+.notification {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  padding: 1rem;
+  border-radius: 8px;
+  font-size: 0.9375rem;
+  font-weight: 600;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  animation: fadeInUp 0.3s ease-out, fadeOut 0.3s ease-out 2.7s forwards;
+}
+
+.notification.success {
+  background: #d1fae5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+}
+
+.notification.error {
+  background: #fee2e2;
+  color: #991b1b;
+  border: 1px solid #fca5a5;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeOut {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}

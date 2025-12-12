@@ -2,6 +2,28 @@ import React, { useState, useEffect } from 'react';
 import { Eye, EyeOff, X, Star, User } from 'lucide-react';
 import styles from '../../../styles/workerdashboard.module.css';
 
+// WorkerHome-Style Notification and Modal
+const ConfirmModal = ({ isOpen, onConfirm, onCancel, message }) => {
+  if (!isOpen) return null;
+
+  return (
+    <div className={styles.modalOverlay}>
+      <div className={styles.modalContent}>
+        <h4 className={styles.modalTitle}>Confirm Action</h4>
+        <p className={styles.modalMessage}>{message}</p>
+        <div className={styles.modalActions}>
+          <button onClick={onConfirm} className={styles.modalButtonYes}>
+            Yes
+          </button>
+          <button onClick={onCancel} className={styles.modalButtonNo}>
+            No
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const Modal = ({ isOpen, onClose, title, children }) => {
   if (!isOpen) return null;
 
@@ -10,11 +32,7 @@ const Modal = ({ isOpen, onClose, title, children }) => {
       <div className={styles.modalContent} onClick={(e) => e.stopPropagation()}>
         <div className={styles.modalHeader}>
           <h3>{title}</h3>
-          <button
-            className={styles.modalCloseButton}
-            onClick={onClose}
-            aria-label="Close modal"
-          >
+          <button className={styles.modalCloseButton} onClick={onClose} aria-label="Close modal">
             <X size={24} />
           </button>
         </div>
@@ -25,15 +43,14 @@ const Modal = ({ isOpen, onClose, title, children }) => {
 };
 
 export const WorkerProfile = ({ data }) => {
-  console.log('Worker Profile - Data received:', data);
-  
   const [worker, setWorker] = useState(data);
   const [isEditing, setIsEditing] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
   const [isSavingProfile, setIsSavingProfile] = useState(false);
   const [isSavingPassword, setIsSavingPassword] = useState(false);
+  const [notification, setNotification] = useState({ message: '', type: '' });
+  const [confirmModal, setConfirmModal] = useState({ isOpen: false, message: '', onConfirm: null, onCancel: null });
 
-  // Reviews state
   const [reviews, setReviews] = useState([]);
   const [averageRating, setAverageRating] = useState(0);
   const [totalReviews, setTotalReviews] = useState(0);
@@ -53,11 +70,18 @@ export const WorkerProfile = ({ data }) => {
 
   const workerId = worker?.id || localStorage.getItem('userId');
 
-  // Fetch reviews when component mounts
+  const showNotification = (message, type) => {
+    setNotification({ message, type });
+    setTimeout(() => setNotification({ message: '', type: '' }), 3000);
+  };
+
+  const showConfirmModal = (message, onConfirm, onCancel) => {
+    setConfirmModal({ isOpen: true, message, onConfirm, onCancel });
+  };
+
   useEffect(() => {
     const fetchReviews = async () => {
       if (!workerId) return;
-      
       try {
         const response = await fetch(`http://localhost:8080/api/workers/${workerId}/profile`);
         if (response.ok) {
@@ -78,20 +102,17 @@ export const WorkerProfile = ({ data }) => {
 
   const handlePhoneNumberChange = (e) => {
     let value = e.target.value;
-    
     if (!value.startsWith('+63')) {
       value = '+63';
     }
-    
     const digits = value.slice(3).replace(/\D/g, '');
     const limitedDigits = digits.slice(0, 10);
-    
     setPhoneNumber('+63' + limitedDigits);
   };
 
   const handleSaveProfile = async () => {
     if (!name.trim() || !phoneNumber.trim()) {
-      alert('Name and phone number are required');
+      showNotification('Name and phone number are required', 'error');
       return;
     }
 
@@ -113,7 +134,7 @@ export const WorkerProfile = ({ data }) => {
 
       if (response.ok) {
         const updatedWorker = await response.json();
-        alert('✅ Profile updated successfully!');
+        showNotification('Profile updated successfully!', 'success');
         setIsEditing(false);
 
         setWorker(updatedWorker);
@@ -125,11 +146,11 @@ export const WorkerProfile = ({ data }) => {
         localStorage.setItem('user', JSON.stringify(updatedWorker));
       } else {
         const error = await response.text();
-        alert('❌ Failed to update profile: ' + error);
+        showNotification('Failed to update profile: ' + error, 'error');
       }
     } catch (error) {
       console.error('Error:', error);
-      alert('❌ Something went wrong: ' + error.message);
+      showNotification('Something went wrong: ' + error.message, 'error');
     } finally {
       setIsSavingProfile(false);
     }
@@ -137,17 +158,17 @@ export const WorkerProfile = ({ data }) => {
 
   const handleChangePassword = async () => {
     if (!currentPassword || !newPassword || !confirmPassword) {
-      alert('All password fields are required');
+      showNotification('All password fields are required', 'error');
       return;
     }
 
     if (newPassword.length < 6) {
-      alert('New password must be at least 6 characters');
+      showNotification('New password must be at least 6 characters', 'error');
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      alert('New password and confirm password do not match');
+      showNotification('New password and confirm password do not match', 'error');
       return;
     }
 
@@ -166,15 +187,15 @@ export const WorkerProfile = ({ data }) => {
       );
 
       if (response.ok) {
-        alert('✅ Password changed successfully!');
+        showNotification('Password changed successfully!', 'success');
         closePasswordModal();
       } else {
         const error = await response.text();
-        alert('❌ ' + error);
+        showNotification(error, 'error');
       }
     } catch (error) {
       console.error('Error:', error);
-      alert('❌ Something went wrong: ' + error.message);
+      showNotification('Something went wrong: ' + error.message, 'error');
     } finally {
       setIsSavingPassword(false);
     }
@@ -190,7 +211,6 @@ export const WorkerProfile = ({ data }) => {
     setShowConfirmPassword(false);
   };
 
-  // Helper function to render stars
   const renderStars = (rating) => {
     return (
       <div style={{ display: 'flex', gap: '2px' }}>
@@ -206,7 +226,6 @@ export const WorkerProfile = ({ data }) => {
     );
   };
 
-  // Format date
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', { 
@@ -218,6 +237,21 @@ export const WorkerProfile = ({ data }) => {
 
   return (
     <div className={styles.profileContainer}>
+      {/* Styled Notification */}
+      {notification.message && (
+        <div className={`${styles.notification} ${notification.type === 'success' ? styles.success : styles.error}`}>
+          {notification.message}
+        </div>
+      )}
+
+      {/* Styled Confirmation Modal */}
+      <ConfirmModal
+        isOpen={confirmModal.isOpen}
+        onConfirm={confirmModal.onConfirm}
+        onCancel={confirmModal.onCancel}
+        message={confirmModal.message}
+      />
+
       <h2 className={styles.profileHeader}>My Professional Profile</h2>
 
       <div className={styles.profileCard}>
@@ -341,8 +375,6 @@ export const WorkerProfile = ({ data }) => {
           <h3 style={{ fontSize: '1.25rem', fontWeight: 'bold', margin: 0 }}>
             Reviews & Ratings
           </h3>
-          
-          {/* Overall Rating Summary */}
           <div style={{ 
             textAlign: 'right',
             padding: '0.75rem 1rem',
@@ -398,7 +430,6 @@ export const WorkerProfile = ({ data }) => {
                   border: '1px solid #e5e7eb'
                 }}
               >
-                {/* Review Header */}
                 <div style={{ 
                   display: 'flex', 
                   justifyContent: 'space-between',
@@ -406,7 +437,6 @@ export const WorkerProfile = ({ data }) => {
                   marginBottom: '0.75rem'
                 }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-                    {/* Customer Avatar */}
                     <div style={{
                       width: '36px',
                       height: '36px',
@@ -418,7 +448,6 @@ export const WorkerProfile = ({ data }) => {
                     }}>
                       <User size={18} color="#4f46e5" />
                     </div>
-                    
                     <div>
                       <p style={{ 
                         fontWeight: '600',
@@ -438,8 +467,6 @@ export const WorkerProfile = ({ data }) => {
                       </p>
                     </div>
                   </div>
-
-                  {/* Star Rating */}
                   <div style={{ 
                     display: 'flex',
                     alignItems: 'center',
@@ -455,8 +482,6 @@ export const WorkerProfile = ({ data }) => {
                     </span>
                   </div>
                 </div>
-
-                {/* Review Comment */}
                 {review.comment && (
                   <div style={{
                     paddingLeft: '3rem'

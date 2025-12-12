@@ -6,8 +6,10 @@ public class BookingResponse {
     private Long id;
     private Long customerId;
     private String customerName;
+    private String customerPhone;
     private Long workerId;
     private String workerName;
+    private String workerPhone;
     
     private String service; // This will hold the JobType Name (e.g. "Cleaning")
     
@@ -29,12 +31,18 @@ public class BookingResponse {
     
     public String getCustomerName() { return customerName; }
     public void setCustomerName(String customerName) { this.customerName = customerName; }
+
+    public String getCustomerPhone() {return customerPhone;}
+    public void setCustomerPhone(String customerPhone) {this.customerPhone = customerPhone;}
     
     public Long getWorkerId() { return workerId; }
     public void setWorkerId(Long workerId) { this.workerId = workerId; }
     
     public String getWorkerName() { return workerName; }
     public void setWorkerName(String workerName) { this.workerName = workerName; }
+
+    public String getWorkerPhone() {return workerPhone;}
+    public void setWorkerPhone(String workerPhone) {this.workerPhone = workerPhone;}
     
     public String getService() { return service; }
     public void setService(String service) { this.service = service; }

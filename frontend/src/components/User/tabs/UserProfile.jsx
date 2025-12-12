@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Eye, EyeOff, X } from 'lucide-react';
-import styles from '../../../styles/UserDashboard.module.css';
+import styles from '../../../styles/UserProfile.module.css';
 
 // Reusable Modal Component
 const Modal = ({ isOpen, onClose, title, children }) => {
@@ -26,14 +26,12 @@ const Modal = ({ isOpen, onClose, title, children }) => {
 };
 
 export const UserProfile = ({ data }) => {
-  // Local copy of user so UI can update immediately after save
   const [user, setUser] = useState(data);
-
   const [isEditing, setIsEditing] = useState(false);
   const [isChangingPassword, setIsChangingPassword] = useState(false);
-
   const [isSavingProfile, setIsSavingProfile] = useState(false);
   const [isSavingPassword, setIsSavingPassword] = useState(false);
+  const [notification, setNotification] = useState({ message: '', type: '' }); // type: 'success' | 'error'
 
   // Form states for profile
   const [name, setName] = useState(data.name || '');
@@ -50,9 +48,14 @@ export const UserProfile = ({ data }) => {
 
   const userId = user?.id || localStorage.getItem('userId');
 
+  const showNotification = (message, type) => {
+    setNotification({ message, type });
+    setTimeout(() => setNotification({ message: '', type: '' }), 3000); // Auto-hide after 3 seconds
+  };
+
   const handleSaveProfile = async () => {
     if (!name.trim() || !phoneNumber.trim()) {
-      alert('Name and phone number are required');
+      showNotification('Name and phone number are required', 'error');
       return;
     }
 
@@ -72,26 +75,23 @@ export const UserProfile = ({ data }) => {
       );
 
       if (response.ok) {
-        // Expecting updated user object from backend
         const updatedUser = await response.json();
-        alert('✅ Profile updated successfully!');
+        showNotification('Profile updated successfully!', 'success');
         setIsEditing(false);
 
-        // Update local user + form fields so UI reflects changes
         setUser(updatedUser);
         setName(updatedUser.name || '');
         setPhoneNumber(updatedUser.phoneNumber || '');
         setAddress(updatedUser.address || '');
 
-        // Optional: also update localStorage if you store user there
         localStorage.setItem('user', JSON.stringify(updatedUser));
       } else {
         const error = await response.text();
-        alert('❌ Failed to update profile: ' + error);
+        showNotification('Failed to update profile: ' + error, 'error');
       }
     } catch (error) {
       console.error('Error:', error);
-      alert('❌ Something went wrong: ' + error.message);
+      showNotification('Something went wrong: ' + error.message, 'error');
     } finally {
       setIsSavingProfile(false);
     }
@@ -99,17 +99,17 @@ export const UserProfile = ({ data }) => {
 
   const handleChangePassword = async () => {
     if (!currentPassword || !newPassword || !confirmPassword) {
-      alert('All password fields are required');
+      showNotification('All password fields are required', 'error');
       return;
     }
 
     if (newPassword.length < 6) {
-      alert('New password must be at least 6 characters');
+      showNotification('New password must be at least 6 characters', 'error');
       return;
     }
 
     if (newPassword !== confirmPassword) {
-      alert('New password and confirm password do not match');
+      showNotification('New password and confirm password do not match', 'error');
       return;
     }
 
@@ -128,15 +128,15 @@ export const UserProfile = ({ data }) => {
       );
 
       if (response.ok) {
-        alert('✅ Password changed successfully!');
+        showNotification('Password changed successfully!', 'success');
         closePasswordModal();
       } else {
         const error = await response.text();
-        alert('❌ ' + error);
+        showNotification(error, 'error');
       }
     } catch (error) {
       console.error('Error:', error);
-      alert('❌ Something went wrong: ' + error.message);
+      showNotification('Something went wrong: ' + error.message, 'error');
     } finally {
       setIsSavingPassword(false);
     }
@@ -154,6 +154,13 @@ export const UserProfile = ({ data }) => {
 
   return (
     <div className={styles.profileContainer}>
+      {/* Styled Notification */}
+      {notification.message && (
+        <div className={`${styles.notification} ${notification.type === 'success' ? styles.success : styles.error}`}>
+          {notification.message}
+        </div>
+      )}
+
       <h2 className={styles.profileHeader}>My Profile</h2>
 
       {/* Profile Information Card */}
@@ -222,7 +229,6 @@ export const UserProfile = ({ data }) => {
               className={styles.editButton}
               onClick={() => {
                 setIsEditing(false);
-                // reset form fields to last saved user values
                 setName(user?.name || '');
                 setPhoneNumber(user?.phoneNumber || '');
                 setAddress(user?.address || '');
@@ -313,9 +319,7 @@ export const UserProfile = ({ data }) => {
               />
               <button
                 type="button"
-                onClick={() =>
-                  setShowConfirmPassword(!showConfirmPassword)
-                }
+                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
                 className={styles.eyeButton}
               >
                 {showConfirmPassword ? <Eye size={20} /> : <EyeOff size={20} />}
