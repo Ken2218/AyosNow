@@ -37,13 +37,13 @@ public class UserController {
     @Autowired
     private JobTypeRepository jobTypeRepository;
 
-    // ==========================================
-    // AUTHENTICATION
-    // ==========================================
 
+    
     @PostMapping("/auth/register")
     public ResponseEntity<?> register(@RequestBody RegisterRequest request) {
         try {
+            System.out.println("📥 Registration Request: " + request.getName() + ", Role: " + request.getRole());
+            
             if ("WORKER".equalsIgnoreCase(request.getRole())) {
                 
                 if (workerRepository.findByEmail(request.getEmail()).isPresent()) {
@@ -56,7 +56,12 @@ public class UserController {
                 worker.setPassword(request.getPassword()); 
                 worker.setPhoneNumber(request.getPhoneNumber());
                 worker.setAddress(request.getLocation());
-                worker.setExperienceYears(request.getExperienceYears());
+                
+                // ✅ FIX: Properly handle experience years
+                Integer expYears = request.getExperienceYears();
+                worker.setExperienceYears(expYears != null ? expYears : 0);
+                System.out.println("✅ Setting experience years: " + worker.getExperienceYears());
+                
                 worker.setAvailabilityStatus("AVAILABLE");
                 worker.setRating(5.0); 
 
@@ -64,10 +69,15 @@ public class UserController {
                     JobType jobType = jobTypeRepository.findById(request.getJobTypeId())
                             .orElseThrow(() -> new RuntimeException("JobType not found"));
                     worker.setJobType(jobType);
+                    System.out.println("✅ Set JobType: " + jobType.getName());
                 }
 
                 Worker savedWorker = workerRepository.save(worker);
-                return ResponseEntity.ok(createLoginResponse(null, savedWorker));
+                System.out.println("✅ Worker saved with ID: " + savedWorker.getWorkerId());
+                
+                Map<String, Object> response = createWorkerResponse(savedWorker);
+                System.out.println("📤 Sending response: " + response);
+                return ResponseEntity.ok(response);
 
             } else {
                 if (userRepository.findByEmail(request.getEmail()).isPresent()) {
@@ -82,10 +92,11 @@ public class UserController {
                 user.setAddress(request.getLocation());
 
                 User savedUser = userRepository.save(user);
-                return ResponseEntity.ok(createLoginResponse(savedUser, null));
+                return ResponseEntity.ok(createUserResponse(savedUser));
             }
 
         } catch (Exception e) {
+            e.printStackTrace();
             return ResponseEntity.badRequest().body("Registration failed: " + e.getMessage());
         }
     }
@@ -100,7 +111,7 @@ public class UserController {
         if (userOpt.isPresent()) {
             User user = userOpt.get();
             if (user.getPassword().equals(password)) {
-                return ResponseEntity.ok(createLoginResponse(user, null));
+                return ResponseEntity.ok(createUserResponse(user));
             } else {
                 return ResponseEntity.status(401).body("Invalid password");
             }
@@ -111,7 +122,7 @@ public class UserController {
         if (workerOpt.isPresent()) {
             Worker worker = workerOpt.get();
             if (worker.getPassword() != null && worker.getPassword().equals(password)) {
-                return ResponseEntity.ok(createLoginResponse(null, worker));
+                return ResponseEntity.ok(createWorkerResponse(worker));
             } else {
                 return ResponseEntity.status(401).body("Invalid password");
             }
@@ -120,40 +131,36 @@ public class UserController {
         return ResponseEntity.status(401).body("User not found or invalid credentials");
     }
 
-    // ==========================================
-    // PROFILE MANAGEMENT
-    // ==========================================
+
 
     @GetMapping("/users/{userId}")
     public ResponseEntity<?> getUserProfile(@PathVariable Long userId) {
         try {
             User user = userRepository.findById(userId)
                     .orElseThrow(() -> new RuntimeException("User not found"));
-            return ResponseEntity.ok(createLoginResponse(user, null));
+            return ResponseEntity.ok(createUserResponse(user));
         } catch (Exception e) {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
 
     @PutMapping("/users/{userId}/profile")
-public ResponseEntity<?> updateUserProfile(@PathVariable Long userId, @RequestBody Map<String, String> updates) {
-    try {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+    public ResponseEntity<?> updateUserProfile(@PathVariable Long userId, @RequestBody Map<String, String> updates) {
+        try {
+            User user = userRepository.findById(userId)
+                    .orElseThrow(() -> new RuntimeException("User not found"));
 
-        if (updates.containsKey("name")) user.setName(updates.get("name"));
-        if (updates.containsKey("phoneNumber")) user.setPhoneNumber(updates.get("phoneNumber"));
-        if (updates.containsKey("address")) user.setAddress(updates.get("address"));
+            if (updates.containsKey("name")) user.setName(updates.get("name"));
+            if (updates.containsKey("phoneNumber")) user.setPhoneNumber(updates.get("phoneNumber"));
+            if (updates.containsKey("address")) user.setAddress(updates.get("address"));
 
-        User savedUser = userRepository.save(user);
-        // Important: send updated user back in same shape as login
-        return ResponseEntity.ok(createLoginResponse(savedUser, null));
-    } catch (Exception e) {
-        return ResponseEntity.badRequest().body("Failed to update profile: " + e.getMessage());
+            User savedUser = userRepository.save(user);
+            return ResponseEntity.ok(createUserResponse(savedUser));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Failed to update profile: " + e.getMessage());
+        }
     }
-}
 
-    // ✅ NEW: Password Update Endpoint
     @PutMapping("/users/{userId}/password")
     public ResponseEntity<?> updatePassword(@PathVariable Long userId, @RequestBody Map<String, String> passwordData) {
         try {
@@ -180,26 +187,32 @@ public ResponseEntity<?> updateUserProfile(@PathVariable Long userId, @RequestBo
         }
     }
 
-    // Helper method
-    private Map<String, Object> createLoginResponse(User user, Worker worker) {
+    // Helper methods
+    private Map<String, Object> createUserResponse(User user) {
         Map<String, Object> response = new HashMap<>();
-        if (user != null) {
-            response.put("id", user.getUserId());
-            response.put("name", user.getName());
-            response.put("email", user.getEmail());
-            response.put("role", "CUSTOMER");
-            response.put("phoneNumber", user.getPhoneNumber());
-            response.put("address", user.getAddress());
-        } else if (worker != null) {
-            response.put("id", worker.getWorkerId());
-            response.put("name", worker.getName());
-            response.put("email", worker.getEmail());
-            response.put("role", "WORKER");
-            response.put("phoneNumber", worker.getPhoneNumber());
-            response.put("address", worker.getAddress());
-            if (worker.getJobType() != null) {
-                response.put("skill", worker.getJobType().getName());
-            }
+        response.put("id", user.getUserId());
+        response.put("name", user.getName());
+        response.put("email", user.getEmail());
+        response.put("role", "CUSTOMER");
+        response.put("phoneNumber", user.getPhoneNumber());
+        response.put("address", user.getAddress());
+        return response;
+    }
+
+    private Map<String, Object> createWorkerResponse(Worker worker) {
+        Map<String, Object> response = new HashMap<>();
+        response.put("id", worker.getWorkerId());
+        response.put("name", worker.getName());
+        response.put("email", worker.getEmail());
+        response.put("role", "WORKER");
+        response.put("phoneNumber", worker.getPhoneNumber());
+        response.put("address", worker.getAddress());
+        response.put("experienceYears", worker.getExperienceYears() != null ? worker.getExperienceYears() : 0);
+        response.put("availabilityStatus", worker.getAvailabilityStatus());
+        response.put("rating", worker.getRating());
+        if (worker.getJobType() != null) {
+            response.put("skill", worker.getJobType().getName());
+            response.put("jobTypeId", worker.getJobType().getJobTypeId());
         }
         return response;
     }

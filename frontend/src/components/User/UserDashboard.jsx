@@ -130,9 +130,6 @@ const UserDashboard = ({ user, setView, setUser, onLogout }) => {
                         </button>
                     </div>
                     <div className={styles.userActions}>
-                        <button className={styles.iconButton} aria-label="Notifications">
-                            <Bell size={20} />
-                        </button>
                         <button onClick={handleLogout} className={styles.logoutButton}>
                             <LogOut size={18} />
                             <span>Logout</span>

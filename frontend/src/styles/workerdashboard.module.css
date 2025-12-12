@@ -888,3 +888,320 @@
   background-color: #fee2e2;
   color: #991b1b;
 }
+
+
+/* --- Modal Styles --- */
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(15, 23, 42, 0.7);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.modalContent {
+    background: white;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 520px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+    animation: slideUp 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(32px) scale(0.96);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0) scale(1);
+        opacity: 1;
+    }
+}
+
+.modalHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 2rem;
+    border-bottom: 2px solid #f1f5f9;
+}
+
+.modalHeader h3 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 800;
+    color: #1e293b;
+    letter-spacing: -0.02em;
+}
+
+.modalCloseButton {
+    background: #f8fafc;
+    border: none;
+    cursor: pointer;
+    color: #64748b;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.modalCloseButton:hover {
+    background-color: #f1f5f9;
+    color: #1e293b;
+    transform: rotate(90deg);
+}
+
+.modalBody {
+    padding: 2rem;
+}
+
+.passwordForm {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+}
+
+.formGroup label {
+    font-size: 0.9375rem;
+    font-weight: 700;
+    color: #334155;
+}
+
+.passwordInputWrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.passwordInput {
+    width: 100%;
+    padding: 0.875rem;
+    padding-right: 3.5rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 1.0625rem;
+    transition: all 0.3s ease;
+    font-family: inherit;
+}
+
+.passwordInput:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+}
+
+.eyeButton {
+    position: absolute;
+    right: 1rem;
+    background: #f8fafc;
+    border: none;
+    cursor: pointer;
+    color: #64748b;
+    padding: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+}
+
+.eyeButton:hover {
+    background: #f1f5f9;
+    color: #1e293b;
+}
+
+.inputField {
+    width: 100%;
+    padding: 0.875rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 1.0625rem;
+    transition: all 0.3s ease;
+    font-family: inherit;
+}
+
+.inputField:focus {
+    outline: none;
+    border-color: #6366f1;
+    box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+}
+
+.modalActions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2rem;
+}
+
+.updateButton {
+    flex: 1;
+    padding: 0.875rem 1.25rem;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 1.0625rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(16, 185, 129, 0.25);
+}
+
+.updateButton:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(16, 185, 129, 0.35);
+}
+
+.updateButton:disabled {
+    background: linear-gradient(135deg, #cbd5e1 0%, #94a3b8 100%);
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+}
+
+.cancelButton {
+    flex: 1;
+    padding: 0.875rem 1.25rem;
+    background: #f8fafc;
+    color: #64748b;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    font-weight: 700;
+    font-size: 1.0625rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.cancelButton:hover {
+    background: #f1f5f9;
+    color: #334155;
+    border-color: #cbd5e1;
+}
+
+.cancelButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* Profile Container Styles */
+.profileContainer {
+    max-width: 900px;
+    margin: 0 auto;
+    padding-top: 1rem;
+}
+
+.profileHeader {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #111827;
+    margin-bottom: 0.5rem;
+}
+
+.profileCard {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 1rem;
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.profileDetail {
+    margin-bottom: 1.5rem;
+    border-bottom: 1px solid #f3f4f6;
+    padding-bottom: 1rem;
+}
+
+.profileDetail:last-of-type {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.profileDetail label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #6b7280;
+    margin-bottom: 0.25rem;
+    text-transform: uppercase;
+}
+
+.profileDetail p {
+    font-size: 1rem;
+    color: #111827;
+    margin: 0;
+    font-weight: 500;
+}
+
+.editButton {
+    background-color: #fcd34d;
+    color: #111827;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.editButton:hover {
+    background-color: #fbbf24;
+}
+
+.editButton:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.settingsGroup {
+    background: white;
+    border: 1px solid #e5e7eb;
+    border-radius: 1rem;
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+}
+
+.settingsGroup h4 {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #1f2937;
+    margin-bottom: 1rem;
+}
+
+.securityButton {
+    background-color: #ef4444;
+    color: white;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    border-radius: 0.5rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.securityButton:hover {
+    background-color: #dc2626;
+}

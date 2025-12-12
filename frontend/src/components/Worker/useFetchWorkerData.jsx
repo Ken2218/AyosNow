@@ -65,7 +65,7 @@ export const useFetchWorkerData = (initialWorkerName, workerId, workerSkill) => 
                                 location: booking.location || 'Location provided upon acceptance',
                                 
                                 // ✅ FIX: Use robust helper function
-                                price: formatPrice(booking.price),
+                                price: booking.price,
                                 
                                 description: booking.description || 'No description provided',
                                 isMatchingSkill: true 

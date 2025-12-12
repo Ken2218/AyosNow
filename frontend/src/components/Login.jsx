@@ -103,7 +103,7 @@ export default function Login({ onRegisterClick, setView, setUser, showMessage }
                 color: '#6b7280'
               }}
             >
-              {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
             </button>
           </div>
         </div>

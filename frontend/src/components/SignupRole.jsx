@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { User, Briefcase, CheckCircle, ArrowRight } from 'lucide-react';
+import { User, Briefcase, CheckCircle, ArrowRight, Eye, EyeOff } from 'lucide-react';
 import axios from 'axios';
 
 // 1. MAP SKILLS TO DATABASE IDs
@@ -18,29 +18,25 @@ export default function SignupRole({ onLoginClick, setView, setUser, showMessage
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false); // 👈 added
   const [skill, setSkill] = useState('');
   const [location, setLocation] = useState('');
   const [phoneNumber, setPhoneNumber] = useState('');
-  // ✅ ADDED: State for experience years
   const [experienceYears, setExperienceYears] = useState('');
+  const [address, setAddress] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
   const handleRegister = async () => {
     setIsLoading(true);
 
-    // 2. CONSTRUCT PAYLOAD MATCHING BACKEND DTO
     const payload = { 
       name, 
       email, 
       password, 
-      role, 
-      // If worker, map the string skill to the ID
+      role,
       jobTypeId: role === 'WORKER' ? JOB_TYPE_MAP[skill] : null,
-      // Map location to 'address' or 'location' depending on your DTO. 
-      // Your Controller maps 'location' -> 'address', so this is fine.
-      location: location, 
+      location: role === 'WORKER' ? location : address,
       phoneNumber: phoneNumber,
-      // ✅ ADDED: Send experienceYears to backend
       experienceYears: role === 'WORKER' ? experienceYears : null
     };
 
@@ -50,8 +46,6 @@ export default function SignupRole({ onLoginClick, setView, setUser, showMessage
       
       localStorage.setItem('user', JSON.stringify(user));
       localStorage.setItem('isAuthenticated', 'true');
-      // Handle the unified login response
-      // Backend returns { id, name, email, role... }
       showMessage(`Account created successfully! Welcome, ${user.name}!`, 'success');
       setUser(user);
 
@@ -175,6 +169,8 @@ export default function SignupRole({ onLoginClick, setView, setUser, showMessage
 
       {step === 2 && (
         <form onSubmit={(e) => { e.preventDefault(); handleRegister(); }}>
+          
+          {/* NAME */}
           <div style={{ marginBottom: '1rem' }}>
             <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', color: '#374151', marginBottom: '0.5rem' }}>
               Full Name
@@ -196,6 +192,7 @@ export default function SignupRole({ onLoginClick, setView, setUser, showMessage
             />
           </div>
 
+          {/* EMAIL */}
           <div style={{ marginBottom: '1rem' }}>
             <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', color: '#374151', marginBottom: '0.5rem' }}>
               Email Address
@@ -217,51 +214,95 @@ export default function SignupRole({ onLoginClick, setView, setUser, showMessage
             />
           </div>
 
+          {/* PASSWORD WITH SHOW/HIDE 👇 */}
           <div style={{ marginBottom: '1rem' }}>
             <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', color: '#374151', marginBottom: '0.5rem' }}>
               Password
             </label>
-            <input 
-              type="password" 
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              required
-              minLength={6}
-              style={{
-                width: '100%',
-                padding: '0.625rem',
-                border: '1px solid #d1d5db',
-                borderRadius: '8px',
-                fontSize: '1rem',
-                outline: 'none',
-              }}
-            />
-          </div>
 
-          {role === 'CUSTOMER' && (
-            <div style={{ marginBottom: '1rem' }}>
-              <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', color: '#374151', marginBottom: '0.5rem' }}>
-                Phone Number
-              </label>
+            <div style={{ position: 'relative', display: 'flex', alignItems: 'center' }}>
               <input 
-                type="tel" 
-                value={phoneNumber}
-                onChange={(e) => setPhoneNumber(e.target.value)}
-                placeholder="0917-123-4567"
+                type={showPassword ? "text" : "password"} 
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="••••••••"
                 required
+                minLength={6}
                 style={{
                   width: '100%',
                   padding: '0.625rem',
+                  paddingRight: '2.5rem',
                   border: '1px solid #d1d5db',
                   borderRadius: '8px',
                   fontSize: '1rem',
                   outline: 'none',
                 }}
               />
+
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                style={{
+                  position: 'absolute',
+                  right: '0.75rem',
+                  background: 'none',
+                  border: 'none',
+                  cursor: 'pointer'
+                }}
+              >
+                {showPassword ? <EyeOff size={20} /> : <Eye size={20} />}
+              </button>
             </div>
+          </div>
+
+          {/* CUSTOMER FIELDS */}
+          {role === 'CUSTOMER' && (
+            <>
+              <div style={{ marginBottom: '1rem' }}>
+                <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', color: '#374151', marginBottom: '0.5rem' }}>
+                  Phone Number
+                </label>
+                <input 
+                  type="tel" 
+                  value={phoneNumber}
+                  onChange={(e) => setPhoneNumber(e.target.value)}
+                  placeholder="0917-123-4567"
+                  required
+                  style={{
+                    width: '100%',
+                    padding: '0.625rem',
+                    border: '1px solid #d1d5db',
+                    borderRadius: '8px',
+                    fontSize: '1rem',
+                    outline: 'none',
+                  }}
+                />
+              </div>
+
+              <div style={{ marginBottom: '1rem' }}>
+                <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', color: '#374151', marginBottom: '0.5rem' }}>
+                  Primary Address
+                </label>
+                <input 
+                  type="text" 
+                  value={address}
+                  onChange={(e) => setAddress(e.target.value)}
+                  placeholder="Enter your full address"
+                  required
+                  style={{
+                    width: '100%',
+                    padding: '0.625rem',
+                    border: '1px solid #d1d5db',
+                    borderRadius: '8px',
+                    fontSize: '1rem',
+                    outline: 'none',
+                  }}
+                />
+              </div>
+            </>
           )}
 
+          {/* WORKER FIELDS */}
           {role === 'WORKER' && (
             <>
               <div style={{ marginBottom: '1rem' }}>
@@ -283,7 +324,6 @@ export default function SignupRole({ onLoginClick, setView, setUser, showMessage
                   }}
                 >
                   <option value="">Select your skill</option>
-                  {/* Using Object.keys to generate options based on MAP */}
                   {Object.keys(JOB_TYPE_MAP).map(key => (
                     <option key={key} value={key}>{key}</option>
                   ))}
@@ -311,7 +351,6 @@ export default function SignupRole({ onLoginClick, setView, setUser, showMessage
                 />
               </div>
 
-              {/* Phone number input for workers */}
               <div style={{ marginBottom: '1rem' }}>
                 <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', color: '#374151', marginBottom: '0.5rem' }}>
                   Phone Number
@@ -333,7 +372,6 @@ export default function SignupRole({ onLoginClick, setView, setUser, showMessage
                 />
               </div>
 
-              {/* ✅ ADDED: Experience Years input for workers */}
               <div style={{ marginBottom: '1rem' }}>
                 <label style={{ display: 'block', fontSize: '0.875rem', fontWeight: '500', color: '#374151', marginBottom: '0.5rem' }}>
                   Years of Experience
@@ -358,6 +396,7 @@ export default function SignupRole({ onLoginClick, setView, setUser, showMessage
             </>
           )}
 
+          {/* SUBMIT BUTTON */}
           <button 
             type="submit" 
             disabled={isLoading}
